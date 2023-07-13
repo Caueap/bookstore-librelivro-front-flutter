@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:librelivro_front_flutter/custom_colors/custom_colors.dart';
 import 'package:librelivro_front_flutter/services/publisher_service.dart';
-import './views/publishers/PublisherView.dart';
+import 'package:librelivro_front_flutter/views/dashboard.dart';
+import 'views/publishers/publisher_view.dart';
 
 void setupLocator() {
   GetIt.instance.registerLazySingleton(() => PublisherService());
@@ -25,7 +26,7 @@ class App extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: teal
       ),
-      home: PublisherView(),
+      home: Dashboard(),
     );
   }
 }

@@ -1,0 +1,29 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        
+        {
+            "name": "librelivro_front_flutter",
+            "cwd": "librelivro_front_flutter",
+            "request": "launch",
+            "type": "dart"
+        },
+        {
+            "name": "librelivro_front_flutter (profile mode)",
+            "cwd": "librelivro_front_flutter",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "profile"
+        },
+        {
+            "name": "librelivro_front_flutter (release mode)",
+            "cwd": "librelivro_front_flutter",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "release"
+        }
+    ]
+}

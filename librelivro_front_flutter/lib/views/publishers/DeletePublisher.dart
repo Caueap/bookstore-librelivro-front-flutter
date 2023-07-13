@@ -8,7 +8,7 @@ class DeletePublisher extends StatelessWidget {
   Widget build(BuildContext context) {
     return AlertDialog(
       title: Text(
-        'Warning'
+        'Deseja excluir essa editora?'
         ),
       actions: <Widget>[
         TextButton(
@@ -16,7 +16,7 @@ class DeletePublisher extends StatelessWidget {
             Navigator.of(context).pop(true);
           },
            child: Text(
-            'Yes'
+            'Sim'
            )
         ),
         TextButton(
@@ -24,7 +24,7 @@ class DeletePublisher extends StatelessWidget {
             Navigator.of(context).pop(false);
           },
            child: Text(
-            'No'
+            'Não'
            )
         )
       ],  

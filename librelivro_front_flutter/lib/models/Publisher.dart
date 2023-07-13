@@ -9,4 +9,21 @@ class Publisher {
     this.city = ''
     });
 
+    factory Publisher.fromJson(Map<String, dynamic> item) {
+      return  Publisher(
+            id: item['id'],
+            name: item['name'],
+            city: item['city']
+            );
+
+    }
+
+    Map<String, dynamic> toJson() {
+      return {
+         'name': name,
+         'city': city
+
+      };
+    }
+
 }
