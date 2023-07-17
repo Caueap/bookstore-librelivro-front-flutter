@@ -2,12 +2,12 @@
 import 'dart:convert';
 
 import 'package:librelivro_front_flutter/models/Publisher.dart';
-import 'package:librelivro_front_flutter/models/api_response.dart';
+import 'package:librelivro_front_flutter/components/publisher_api_response.dart';
 import 'package:http/http.dart' as http;
 
 class PublisherService {
 
-  static const Api = 'http://192.168.15.80:8080/api2';
+  static const Api = 'http://192.168.1.2:8080/api2';
   final url = Uri.parse('$Api/publisher');
   
 
@@ -17,23 +17,27 @@ class PublisherService {
 
 
 
-  Future<ApiResponse<List<Publisher>>> getPublishers()  {
+  Future<PublisherApiResponse<List<Publisher>>> getPublishers()  {
     return http.get(url).then((data) {
-
+      
+      
       if (data.statusCode == 200) {
+        
         final jsonData = jsonDecode(data.body);
         final publishers = <Publisher>[]; 
         for (var item in jsonData) {
             publishers.add(Publisher.fromJson(item));
         }
-        return ApiResponse<List<Publisher>>(data: publishers);
+
+        return PublisherApiResponse<List<Publisher>>(data: publishers);
       }
-      return ApiResponse<List<Publisher>>(error: true, errorMessage: 'An error occured');
+      return PublisherApiResponse<List<Publisher>>(error: true, errorMessage: 'An error occured');
     });
+    // .catchError((_) => ApiResponse<List<Publisher>>(error: true, errorMessage: 'An error occured2'));
     
   }
 
-  Future<ApiResponse<Publisher>> getPublisherById(int id)  {
+  Future<PublisherApiResponse<Publisher>> getPublisherById(int id)  {
     
     var urlId = Uri.parse('$url/$id');
 
@@ -43,14 +47,14 @@ class PublisherService {
         final jsonData = jsonDecode(data.body);
         
         
-        return ApiResponse<Publisher>(data: Publisher.fromJson(jsonData));
+        return PublisherApiResponse<Publisher>(data: Publisher.fromJson(jsonData));
       }
-      return ApiResponse<Publisher>(error: true, errorMessage: 'An error occured');
+      return PublisherApiResponse<Publisher>(error: true, errorMessage: 'An error occured');
     });
     
   }
 
-  Future<ApiResponse<bool>> createPublisher(Publisher publisher)  {
+  Future<PublisherApiResponse<bool>> createPublisher(Publisher publisher)  {
     return http.post(url, headers: headers, body: json.encode(publisher.toJson())).
     then((data) {
 
@@ -67,38 +71,38 @@ class PublisherService {
             // city:['city']
             // );
             // publishers.add(publisher);
-        return ApiResponse<bool>(data: true);
+        return PublisherApiResponse<bool>(data: true);
         }
-      return ApiResponse<bool>(error: true, errorMessage: 'Ocorreu um erro no service');
+      return PublisherApiResponse<bool>(error: true, errorMessage: 'Ocorreu um erro no service');
     });
       }
     
 
-  Future<ApiResponse<bool>> updatePublisher(int id, Publisher publisher) {
+  Future<PublisherApiResponse<bool>> updatePublisher(int id, Publisher publisher) {
     var urlId = Uri.parse('$url/$id');
 
     return http.put(urlId, headers: headers, body: json.encode(publisher.toJson()))
     .then((data) {
       if (data.statusCode == 200) {
         
-        return ApiResponse<bool>(data: true);
+        return PublisherApiResponse<bool>(data: true);
         }
-      return ApiResponse<bool>(error: true, errorMessage: 'Ocorreu um erro no service');
+      return PublisherApiResponse<bool>(error: true, errorMessage: 'Ocorreu um erro no service');
 
     });
     
       }
 
-      Future<ApiResponse<bool>> deletePublisher(int id) {
+      Future<PublisherApiResponse<bool>> deletePublisher(int id) {
     var urlId = Uri.parse('$url/$id');
 
     return http.delete(urlId, headers: headers)
     .then((data) {
       if (data.statusCode == 204) {
         
-        return ApiResponse<bool>(data: true);
+        return PublisherApiResponse<bool>(data: true);
         }
-      return ApiResponse<bool>(error: true, errorMessage: 'Ocorreu um erro no service');
+      return PublisherApiResponse<bool>(error: true, errorMessage: 'Ocorreu um erro no service');
 
     });
     

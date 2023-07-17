@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:librelivro_front_flutter/components/navigation_drawer.dart';
-import 'package:librelivro_front_flutter/models/api_response.dart';
+import 'package:librelivro_front_flutter/components/publisher_api_response.dart';
 import 'package:librelivro_front_flutter/services/publisher_service.dart';
 import 'package:librelivro_front_flutter/views/publishers/DeletePublisher.dart';
 import 'package:librelivro_front_flutter/views/publishers/PublisherModify.dart';
@@ -19,7 +19,7 @@ class PublisherView extends StatefulWidget {
 class _PublisherViewState extends State<PublisherView> {
   PublisherService get publisherService => GetIt.instance<PublisherService>();
 
-  late ApiResponse<List<Publisher>> _apiResponse;
+  late PublisherApiResponse<List<Publisher>> _apiResponse;
   bool _isLoading = false;
   
 
@@ -28,7 +28,7 @@ class _PublisherViewState extends State<PublisherView> {
     _fetchPublishers();
     super.initState();
   }
-
+ 
   _fetchPublishers() async {
     setState(() {
       _isLoading = true;
@@ -36,6 +36,8 @@ class _PublisherViewState extends State<PublisherView> {
     });
     
     _apiResponse = await publisherService.getPublishers();
+
+  
 
     // await Future.delayed(Duration(seconds: 3));
     setState(() {
