@@ -2,15 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:librelivro_front_flutter/components/navigation_drawer.dart';
 import 'package:librelivro_front_flutter/components/publisher_api_response.dart';
-import 'package:librelivro_front_flutter/services/publisher_service.dart';
+
 import 'package:librelivro_front_flutter/views/publishers/DeletePublisher.dart';
 import 'package:librelivro_front_flutter/views/publishers/PublisherModify.dart';
-import '../../models/Publisher.dart';
+import '../../models/publisher_model/Publisher.dart';
 import '../../custom_colors/custom_colors.dart';
+import '../../services/publisher_service/publisher_service.dart';
 
 
 
-class PublisherView extends StatefulWidget {
+class PublisherView extends StatefulWidget { 
 
   @override
   State<PublisherView> createState() => _PublisherViewState();
@@ -18,6 +19,8 @@ class PublisherView extends StatefulWidget {
 
 class _PublisherViewState extends State<PublisherView> {
   PublisherService get publisherService => GetIt.instance<PublisherService>();
+
+  
 
   late PublisherApiResponse<List<Publisher>> _apiResponse;
   bool _isLoading = false;
@@ -28,6 +31,7 @@ class _PublisherViewState extends State<PublisherView> {
     _fetchPublishers();
     super.initState();
   }
+
  
   _fetchPublishers() async {
     setState(() {
@@ -45,9 +49,6 @@ class _PublisherViewState extends State<PublisherView> {
       
     });
   }
-
-
-
 
   @override
   Widget build(BuildContext context) {

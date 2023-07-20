@@ -1,7 +1,7 @@
 
 import 'dart:convert';
 
-import 'package:librelivro_front_flutter/models/Publisher.dart';
+import 'package:librelivro_front_flutter/models/publisher_model/Publisher.dart';
 import 'package:librelivro_front_flutter/components/publisher_api_response.dart';
 import 'package:http/http.dart' as http;
 
@@ -17,13 +17,13 @@ class PublisherService {
 
 
 
-  Future<PublisherApiResponse<List<Publisher>>> getPublishers()  {
+  Future<PublisherApiResponse<List<Publisher>>> getPublishers()  { 
     return http.get(url).then((data) {
       
       
       if (data.statusCode == 200) {
         
-        final jsonData = jsonDecode(data.body);
+        final jsonData = jsonDecode(data.body); 
         final publishers = <Publisher>[]; 
         for (var item in jsonData) {
             publishers.add(Publisher.fromJson(item));

@@ -7,7 +7,7 @@ class Publisher {
     this.id = 0,
     this.name = '',
     this.city = ''
-    });
+    }); 
 
     factory Publisher.fromJson(Map<String, dynamic> item) {
       return  Publisher(

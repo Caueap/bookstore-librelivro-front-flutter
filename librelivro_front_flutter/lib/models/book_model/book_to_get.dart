@@ -1,4 +1,4 @@
-import 'package:librelivro_front_flutter/models/Publisher.dart';
+import 'package:librelivro_front_flutter/models/publisher_model/Publisher.dart';
 
 class BookToGet<T> {
  
@@ -8,7 +8,7 @@ class BookToGet<T> {
   DateTime? releaseDate;
   int amount;
   int rentedAmount;
-  Publisher? publisherModel;
+  Publisher? publisherModel; 
 
   BookToGet
   ({

@@ -2,7 +2,8 @@
 import 'dart:convert';
 
 import 'package:librelivro_front_flutter/components/book_api_response.dart';
-import 'package:librelivro_front_flutter/models/book_to_get.dart';
+import 'package:librelivro_front_flutter/models/book_model/book_to_create.dart';
+import 'package:librelivro_front_flutter/models/book_model/book_to_get.dart';
 import 'package:http/http.dart' as http;
 
 class BookService {
@@ -56,28 +57,17 @@ class BookService {
     
   // }
 
-  // Future<BookApiResponse<bool>> createPublisher(Publisher publisher)  {
-  //   return http.post(url, headers: headers, body: json.encode(publisher.toJson())).
-  //   then((data) {
+  Future<BookApiResponse<bool>> createBook(BookToCreate bookToCreate)  {
+    return http.post(url, headers: headers, body: json.encode(bookToCreate.toJson())).
+    then((data) {
 
-  //     if (data.statusCode == 201) {
-  //       // final jsonData = jsonDecode(result.body);
-  //       // final publishers = <Publisher>[]; 
-  //       // for (var item in jsonData) {
-  //       //   final publisher = Publisher(
-  //                             // Quando passava o id, estava dando erro. Suposição: o id não é passado,
-  //                             // é gerado dinamicamente pelo back. O erro era o 415.
-            
-  //           // id: item['id'],
-  //           // name:['name'],
-  //           // city:['city']
-  //           // );
-  //           // publishers.add(publisher);
-  //       return BookApiResponse<bool>(data: true);
-  //       }
-  //     return BookApiResponse<bool>(error: true, errorMessage: 'Ocorreu um erro no service');
-  //   });
-  //     }
+      if (data.statusCode == 201) {
+         
+        return BookApiResponse<bool>(data: true);
+        }
+      return BookApiResponse<bool>(error: true, errorMessage: 'Ocorreu um erro no service');
+    });
+      }
     
 
   // Future<BookApiResponse<bool>> updatePublisher(int id, Publisher publisher) {

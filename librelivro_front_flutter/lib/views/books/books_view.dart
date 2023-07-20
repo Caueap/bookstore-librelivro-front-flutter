@@ -1,14 +1,16 @@
 
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
-import 'package:librelivro_front_flutter/models/book_to_get.dart';
-import 'package:librelivro_front_flutter/services/book_service.dart';
+import 'package:librelivro_front_flutter/models/book_model/book_to_get.dart';
+
+import 'package:librelivro_front_flutter/views/books/book_modify.dart';
 
 import '../../components/book_api_response.dart';
 import '../../components/navigation_drawer.dart';
+import '../../services/book_service/book_service.dart';
 
 
-class BooksView extends StatefulWidget { 
+class BooksView extends StatefulWidget {  
   
   @override
   State<BooksView> createState() => _BooksViewState();
@@ -54,7 +56,13 @@ class _BooksViewState extends State<BooksView> {
         title: Text('Livros'),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {} ,
+        onPressed: () {
+          Navigator.of(context)
+          .push(MaterialPageRoute(builder: (_) => BookModify()
+          )).then((_) {
+            _fetchBooks();
+          });
+        } ,
         child: Icon(Icons.add),
       ),
       body: Builder(
@@ -77,10 +85,36 @@ class _BooksViewState extends State<BooksView> {
                   child: ExpansionTile(
                     title: Text(
                       bookApiResponse.data![index].name,
-                    style: TextStyle(color: Theme.of(context).primaryColor)),
-                    subtitle: Text(
-                      'Editora: ${bookApiResponse.data![index].publisherModel!.name}' ),
+                    style: TextStyle(color: Theme.of(context).primaryColor,
+                    fontSize: 24)),
+                    
                     children: [
+                      Align(
+                        alignment: Alignment.centerLeft,
+
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: DefaultTextStyle(
+                  style: TextStyle(
+                    fontSize: 18,
+                    color: Theme.of(context).primaryColor,
+                  ),
+                        child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('Autor: ${bookApiResponse.data![index].author}'),
+                        Text('Data de lançamento: ${bookApiResponse.data![index].releaseDate}'),
+                        Text('Quantidade em estoque: ${bookApiResponse.data![index].amount}'),
+                        Text('Quantidade Alugada: ${bookApiResponse.data![index].rentedAmount}'),
+                        Text('Editora: ${bookApiResponse.data![index].publisherModel!.name}'),
+                      ],
+                    ),
+                        )
+                        ),
+                      ),
+
+
+                        
                             Align(
                             alignment: Alignment.centerRight,  
                             child: Row(

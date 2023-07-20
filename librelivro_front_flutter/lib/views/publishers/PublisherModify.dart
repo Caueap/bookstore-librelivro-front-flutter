@@ -3,11 +3,13 @@
 
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
-import 'package:librelivro_front_flutter/models/Publisher.dart';
-import 'package:librelivro_front_flutter/services/publisher_service.dart';
+import 'package:librelivro_front_flutter/models/publisher_model/Publisher.dart';
+
+
+import '../../services/publisher_service/publisher_service.dart';
 
 class PublisherModify extends StatefulWidget {
-
+ 
    int? id;
 
   PublisherModify({this.id});
