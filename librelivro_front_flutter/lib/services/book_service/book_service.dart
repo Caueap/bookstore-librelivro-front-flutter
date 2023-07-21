@@ -3,7 +3,7 @@ import 'dart:convert';
 
 import 'package:librelivro_front_flutter/components/book_api_response.dart';
 import 'package:librelivro_front_flutter/models/book_model/book_to_create.dart';
-import 'package:librelivro_front_flutter/models/book_model/book_to_get.dart';
+import 'package:librelivro_front_flutter/models/book_model/books.dart';
 import 'package:http/http.dart' as http;
 
 class BookService {
@@ -20,45 +20,45 @@ class BookService {
 
 
 
-  Future<BookApiResponse<List<BookToGet>>> getBooks()  {
+  Future<BookApiResponse<List<Book>>> getBooks()  {
     return http.get(url).then((data) {
       
       
       if (data.statusCode == 200) {
         
         final jsonData = jsonDecode(data.body);
-        final books = <BookToGet>[]; 
+        final books = <Book>[]; 
         for (var item in jsonData) {
-            books.add(BookToGet.fromJson(item));
+            books.add(Book.fromJson(item));
         }
 
-        return BookApiResponse<List<BookToGet>>(data: books);
+        return BookApiResponse<List<Book>>(data: books);
       }
-      return BookApiResponse<List<BookToGet>>(error: true, errorMessage: 'An error occured');
+      return BookApiResponse<List<Book>>(error: true, errorMessage: 'An error occured');
     });
     // .catchError((_) => ApiResponse<List<Publisher>>(error: true, errorMessage: 'An error occured2'));
     
   }
 
-  // Future<BookApiResponse<Publisher>> getPublisherById(int id)  {
+  Future<BookApiResponse<Book>> getBookById(int id)  {
     
-  //   var urlId = Uri.parse('$url/$id');
+    var urlId = Uri.parse('$url/$id');
 
-  //   return http.get(urlId).then((data) {
+    return http.get(urlId).then((data) {
 
-  //     if (data.statusCode == 200) {
-  //       final jsonData = jsonDecode(data.body);
+      if (data.statusCode == 200) {
+        final jsonData = jsonDecode(data.body);
         
         
-  //       return BookApiResponse<Publisher>(data: Publisher.fromJson(jsonData));
-  //     }
-  //     return BookApiResponse<Publisher>(error: true, errorMessage: 'An error occured');
-  //   });
+        return BookApiResponse<Book>(data: Book.fromJson(jsonData));
+      }
+      return BookApiResponse<Book>(error: true, errorMessage: 'An error occured');
+    });
     
-  // }
+  }
 
-  Future<BookApiResponse<bool>> createBook(BookToCreate bookToCreate)  {
-    return http.post(url, headers: headers, body: json.encode(bookToCreate.toJson())).
+  Future<BookApiResponse<bool>> createBook(Book book)  {
+    return http.post(url, headers: headers, body: json.encode(book.toJson())).
     then((data) {
 
       if (data.statusCode == 201) {
@@ -70,35 +70,35 @@ class BookService {
       }
     
 
-  // Future<BookApiResponse<bool>> updatePublisher(int id, Publisher publisher) {
-  //   var urlId = Uri.parse('$url/$id');
+  Future<BookApiResponse<bool>> updateBook(int id, Book book) {
+    var urlId = Uri.parse('$url/$id');
 
-  //   return http.put(urlId, headers: headers, body: json.encode(publisher.toJson()))
-  //   .then((data) {
-  //     if (data.statusCode == 200) {
+    return http.put(urlId, headers: headers, body: json.encode(book.toJson()))
+    .then((data) {
+      if (data.statusCode == 200) {
         
-  //       return BookApiResponse<bool>(data: true);
-  //       }
-  //     return BookApiResponse<bool>(error: true, errorMessage: 'Ocorreu um erro no service');
+        return BookApiResponse<bool>(data: true);
+        }
+      return BookApiResponse<bool>(error: true, errorMessage: 'Ocorreu um erro no service');
 
-  //   });
+    });
     
-  //     }
+      }
 
-  //     Future<BookApiResponse<bool>> deletePublisher(int id) {
-  //   var urlId = Uri.parse('$url/$id');
+      Future<BookApiResponse<bool>> deleteBook(int id) {
+    var urlId = Uri.parse('$url/$id');
 
-  //   return http.delete(urlId, headers: headers)
-  //   .then((data) {
-  //     if (data.statusCode == 204) {
+    return http.delete(urlId, headers: headers)
+    .then((data) {
+      if (data.statusCode == 204) {
         
-  //       return BookApiResponse<bool>(data: true);
-  //       }
-  //     return BookApiResponse<bool>(error: true, errorMessage: 'Ocorreu um erro no service');
+        return BookApiResponse<bool>(data: true);
+        }
+      return BookApiResponse<bool>(error: true, errorMessage: 'Ocorreu um erro no service');
 
-  //   });
+    });
     
-  //     }
+      }
 
 
 }

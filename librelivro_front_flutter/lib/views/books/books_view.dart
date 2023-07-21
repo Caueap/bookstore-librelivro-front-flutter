@@ -1,9 +1,10 @@
 
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
-import 'package:librelivro_front_flutter/models/book_model/book_to_get.dart';
+import 'package:librelivro_front_flutter/models/book_model/books.dart';
 
 import 'package:librelivro_front_flutter/views/books/book_modify.dart';
+import 'package:librelivro_front_flutter/views/books/books_delete.dart';
 
 import '../../components/book_api_response.dart';
 import '../../components/navigation_drawer.dart';
@@ -20,7 +21,7 @@ class _BooksViewState extends State<BooksView> {
   
   BookService get bookService => GetIt.instance<BookService>();
 
-  late BookApiResponse<List<BookToGet>> bookApiResponse;
+  late BookApiResponse<List<Book>> bookApiResponse;
   bool isLoading = false;
 
     @override
@@ -103,7 +104,7 @@ class _BooksViewState extends State<BooksView> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text('Autor: ${bookApiResponse.data![index].author}'),
-                        Text('Data de lançamento: ${bookApiResponse.data![index].releaseDate}'),
+                        Text('Data de lançamento: ${bookApiResponse.data![index].releaseDateFrom}'),
                         Text('Quantidade em estoque: ${bookApiResponse.data![index].amount}'),
                         Text('Quantidade Alugada: ${bookApiResponse.data![index].rentedAmount}'),
                         Text('Editora: ${bookApiResponse.data![index].publisherModel!.name}'),
@@ -125,55 +126,55 @@ class _BooksViewState extends State<BooksView> {
                                   color: Theme.of(context).primaryColor),
                                   
                                   onPressed: () {
-                                    // Navigator.of(context)
-                                    // .push(MaterialPageRoute(
-                                    //   builder: (_) => PublisherModify(
-                                    //     id: _apiResponse.data?[index].id)))
-                                    //     .then((data) => {
-                                    //       _fetchPublishers()
-                                    //     });
+                                    Navigator.of(context)
+                                    .push(MaterialPageRoute(
+                                      builder: (_) => BookModify(
+                                        id: bookApiResponse.data?[index].id)))
+                                        .then((data) => {
+                                          _fetchBooks()
+                                        });
                                         } ,
                                       ),
                                   IconButton(
                                   icon: Icon(Icons.delete, color: Colors.red),
-                                  onPressed: ()  {
-                                    // final result = await showDialog(
-                                    //   context: context,
-                                    //   builder: (_) => DeletePublisher());
+                                  onPressed: () async  {
+                                    final result = await showDialog(
+                                      context: context,
+                                      builder: (_) => BookDelete());
 
-                                    //   if (result) {
-                                    //     final deleteResult = await publisherService.deletePublisher(_apiResponse.data![index].id);
+                                      if (result) {
+                                        final deleteResult = await bookService.deleteBook(bookApiResponse.data![index].id);
 
-                                    //     var message;
-                                    //     if (deleteResult != null && deleteResult.data == true) {
-                                    //        message = 'Editora excluida';
-                                    //     } else {
-                                    //       message = deleteResult.errorMessage;
-                                    //     }
+                                        var message;
+                                        if (deleteResult != null && deleteResult.data == true) {
+                                           message = 'Livro excluido';
+                                        } else {
+                                          message = deleteResult.errorMessage;
+                                        }
 
-                                    //     showDialog(
-                                    //       context: context,
-                                    //       builder: (_) {
-                                    //         return AlertDialog(
-                                    //         title: Text('Sucesso!'),
-                                    //         content: Text(message),
-                                    //         actions: [
-                                    //           TextButton(
-                                    //             child: Text('Ok'),
-                                    //             onPressed: () {
-                                    //               Navigator.of(context).pop();
-                                    //             }) 
+                                        showDialog(
+                                          context: context,
+                                          builder: (_) {
+                                            return AlertDialog(
+                                            title: Text('Sucesso!'),
+                                            content: Text(message),
+                                            actions: [
+                                              TextButton(
+                                                child: Text('Ok'),
+                                                onPressed: () {
+                                                  Navigator.of(context).pop();
+                                                }) 
                                                 
-                                    //         ]
-                                    //       );})
-                                    //       .then((data) {
-                                    //         if (deleteResult.data!) {
-                                    //           _fetchPublishers();
-                                    //         }
-                                    //       });
-                                    //   }
-                                    //   print(result);
-                                    //   return result;  
+                                            ]
+                                          );})
+                                          .then((data) {
+                                            if (deleteResult.data!) {
+                                              _fetchBooks();
+                                            }
+                                          });
+                                      }
+                                      print(result);
+                                      return result;  
                                   })],
                                 
                             

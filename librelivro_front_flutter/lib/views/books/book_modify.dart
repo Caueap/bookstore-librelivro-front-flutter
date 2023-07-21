@@ -2,7 +2,8 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:librelivro_front_flutter/main.dart';
-import 'package:librelivro_front_flutter/models/book_model/book_to_create.dart';
+import '../../models/book_model/books.dart';
+import 'package:librelivro_front_flutter/models/book_model/books.dart';
 
 import 'package:librelivro_front_flutter/services/publisher_service/publisher_service.dart';
 import '../../components/publisher_api_response.dart';
@@ -18,6 +19,8 @@ class BookModify extends StatefulWidget {
     
   int? id;
 
+  BookModify({this.id});
+
   @override
   State<BookModify> createState() => _BookModifyState();
 
@@ -32,8 +35,9 @@ class _BookModifyState extends State<BookModify> {
   final TextEditingController nameController = TextEditingController();
   final TextEditingController authorController = TextEditingController();
   final TextEditingController cityController = TextEditingController();
-  final TextEditingController releaseDateController = TextEditingController();
+   TextEditingController releaseDateController = TextEditingController();
   final TextEditingController amountController = TextEditingController();
+  final TextEditingController rentedAmountController = TextEditingController();
 
   late PublisherApiResponse<List<Publisher>> publisherApiResponse;
    List<Publisher>? publishers = [];
@@ -41,10 +45,12 @@ class _BookModifyState extends State<BookModify> {
    bool get isEditing => widget.id != null;
    bool isLoading = false;
    String errorMessage = '';
+   Book? book;
 
   @override
   void initState() {
     fetchPublishers();
+    getBookByIdInModify();
     super.initState();
   }
 
@@ -70,7 +76,35 @@ class _BookModifyState extends State<BookModify> {
       }
     });
   }
-   
+
+  getBookByIdInModify () {
+
+   setState(() {
+          isLoading = true;
+        });
+
+        bookService.getBookById(widget.id ?? 0)
+        .then((response) {
+          
+          setState(() {
+          isLoading = false;
+        });
+
+          if (response.error) {
+            errorMessage = response.errorMessage;
+          }
+          book = response.data!;
+          nameController.text = book!.name;
+          authorController.text = book!.author;
+          releaseDateController.text = book!.releaseDateFrom.toString();
+          amountController.text = book!.amount.toString();
+          rentedAmountController.text = book!.rentedAmount.toString();
+          
+
+        });
+  }
+
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -101,7 +135,7 @@ class _BookModifyState extends State<BookModify> {
 
               Container(height: 8),
 
-              TextField(
+              TextField(  
               controller: releaseDateController,
               decoration: InputDecoration(
                 hintText: 'Data de lançamento'
@@ -144,47 +178,53 @@ class _BookModifyState extends State<BookModify> {
                     onPressed: () async {
                       if (isEditing) {
 
-                        // setState(() {
-                        //   isLoading = true;
-                        // });
+                        setState(() {
+                          isLoading = true;
+                        });
 
-                        // final publisher =  Publisher(
-                        //   //Obs: estava dando erro 400 bad request. Tive que adicionar o controller nos
-                        //   //TextField acima. Senão, o nome e a cidade seriam passados nulos.
-                        //   name: nameController.text,
-                        //   city: cityController.text 
-                        // );
+                        final releaseDate = DateTime.parse(releaseDateController.text);
+                        final formattedReleaseDate = DateFormat('yyyy-MM-dd').format(releaseDate);
+
+                        final book =  Book(
+                          //Obs: estava dando erro 400 bad request. Tive que adicionar o controller nos
+                          //TextField acima. Senão, o nome e a cidade seriam passados nulos.
+                          name: nameController.text,
+                          author: authorController.text,
+                          releaseDateTo: formattedReleaseDate,
+                          amount: int.parse(amountController.text),
+                          publisherModelId: selectedPublisher!.id
+                        );
 
                         
-                        // final publisherService = PublisherService();
-                        // final result  = await publisherService.updatePublisher(widget.id!, publisher);
+                        final bookService = BookService();
+                        final result  = await bookService.updateBook(widget.id!, book);
 
-                        // setState(() {
-                        //   isLoading = false;
-                        // });
+                        setState(() {
+                          isLoading = false;
+                        });
 
-                        // final text = result.error ? (result.errorMessage ?? 'Erro no modify') : 'Editora Atualizada!';
+                        final text = result.error ? (result.errorMessage ?? 'Erro no modify') : 'Livro Atualizado!';
                         
-                        // showDialog(
-                        //   context: context,
-                        //   builder: (_) {
-                        //     return AlertDialog(
-                        //     title: Text('Success'),
-                        //     content: Text(text),
-                        //     actions: [
-                        //       TextButton(
-                        //         child: Text('Ok'),
-                        //         onPressed: () {
-                        //           Navigator.of(context).pop();
-                        //         }) 
+                        showDialog(
+                          context: context,
+                          builder: (_) {
+                            return AlertDialog(
+                            title: Text('Success'),
+                            content: Text(text),
+                            actions: [
+                              TextButton(
+                                child: Text('Ok'),
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                }) 
                                 
-                        //     ]
-                        //   );})
-                        //   .then((data) {
-                        //     if (result.data!) {
-                        //       Navigator.of(context).pop();
-                        //     }
-                        //   });
+                            ]
+                          );})
+                          .then((data) {
+                            if (result.data!) {
+                              Navigator.of(context).pop();
+                            }
+                          });
 
                       } else {
 
@@ -195,12 +235,12 @@ class _BookModifyState extends State<BookModify> {
                         final releaseDate = DateTime.parse(releaseDateController.text);
                         final formattedReleaseDate = DateFormat('yyyy-MM-dd').format(releaseDate);
 
-                        final bookToCreate =  BookToCreate(
+                        final book =  Book(
                           //Obs: estava dando erro 400 bad request. Tive que adicionar o controller nos
                           //TextField acima. Senão, o nome e a cidade seriam passados nulos.
                           name: nameController.text,
                           author: authorController.text,
-                          releaseDate: formattedReleaseDate,
+                          releaseDateTo: formattedReleaseDate,
                           amount: int.parse(amountController.text),
                           publisherModelId: selectedPublisher!.id
                           
@@ -208,7 +248,7 @@ class _BookModifyState extends State<BookModify> {
 
                         
                         final bookService = BookService();
-                        final result  = await bookService.createBook(bookToCreate);
+                        final result  = await bookService.createBook(book);
 
                         setState(() {
                           isLoading = false;
