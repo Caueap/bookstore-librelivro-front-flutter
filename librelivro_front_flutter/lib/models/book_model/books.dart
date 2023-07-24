@@ -5,7 +5,7 @@ class Book<T> {
   int id;
   String name;
   String author;
-  DateTime? releaseDateFrom;
+  String releaseDateFrom;
   String releaseDateTo;
   int amount;
   int rentedAmount;
@@ -17,7 +17,7 @@ class Book<T> {
     this.id = 0,
     this.name = '',
     this.author = '',
-    this.releaseDateFrom,
+    this.releaseDateFrom = '',
     this.releaseDateTo = '',
     this.amount = 0,
     this.rentedAmount = 0,
@@ -30,7 +30,7 @@ class Book<T> {
             id: item['id'],
             name: item['name'],
             author: item['author'],
-            releaseDateFrom: DateTime.parse(item['releaseDate']),
+            releaseDateFrom: item['releaseDate'],
             amount: item['amount'],
             rentedAmount: item['rentedAmount'],
             publisherModel: Publisher.fromJson(item['publisherModel']) 

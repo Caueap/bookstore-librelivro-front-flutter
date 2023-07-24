@@ -1,4 +1,6 @@
 
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:librelivro_front_flutter/main.dart';
@@ -32,12 +34,15 @@ class _BookModifyState extends State<BookModify> {
   BookService get bookService => GetIt.instance<BookService>();
   PublisherService get publisherService => GetIt.instance<PublisherService>();
 
+  final GlobalKey<FormState> formKey = GlobalKey<FormState>();
+
   final TextEditingController nameController = TextEditingController();
   final TextEditingController authorController = TextEditingController();
   final TextEditingController cityController = TextEditingController();
    TextEditingController releaseDateController = TextEditingController();
   final TextEditingController amountController = TextEditingController();
   final TextEditingController rentedAmountController = TextEditingController();
+  
 
   late PublisherApiResponse<List<Publisher>> publisherApiResponse;
    List<Publisher>? publishers = [];
@@ -46,6 +51,8 @@ class _BookModifyState extends State<BookModify> {
    bool isLoading = false;
    String errorMessage = '';
    Book? book;
+   String? datevar;
+
 
   @override
   void initState() {
@@ -100,6 +107,8 @@ class _BookModifyState extends State<BookModify> {
           amountController.text = book!.amount.toString();
           rentedAmountController.text = book!.rentedAmount.toString();
           
+          
+          
 
         });
   }
@@ -115,40 +124,62 @@ class _BookModifyState extends State<BookModify> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(12.0),
-        child: isLoading ? Center(child: CircularProgressIndicator()) : Column(
+        child: isLoading ? Center(child: CircularProgressIndicator())
+         : Form( 
+          key: formKey,
+          child: Column(
           children: [
-            TextField(
+            TextFormField(
               controller: nameController,
               decoration: InputDecoration(
                 hintText: 'Nome do livro'
                 ),
+                validator: validateBookName,
+                
               ),
 
             Container(height: 8),
 
-            TextField(
+            TextFormField(
               controller: authorController,
               decoration: InputDecoration(
                 hintText: 'Autor'
                 ),
+                validator: validateAuthorName,
+                
               ),
 
               Container(height: 8),
 
-              TextField(  
+              TextFormField(  
               controller: releaseDateController,
               decoration: InputDecoration(
                 hintText: 'Data de lançamento'
                 ),
+                onTap: () async {
+                  DateTime? pickeddate = await showDatePicker(
+                      context: context,
+                      initialDate: DateTime.now(),
+                      firstDate: DateTime(0000),
+                      lastDate: DateTime.now());
+
+                  if (pickeddate != null) {
+                    setState(() {
+                       releaseDateController.text = DateFormat('dd/MM/yyyy').format(pickeddate);
+                    });
+                  }
+                },
               ),
+
 
               Container(height: 8),
 
-              TextField(
+              TextFormField(
               controller: amountController,
               decoration: InputDecoration(
                 hintText: 'Quantidade'
                 ),
+                validator: validateAmount,
               ),
 
               Container(height: 8),
@@ -161,12 +192,14 @@ class _BookModifyState extends State<BookModify> {
                       value: selectedPublisher,
                       child: Text(selectedPublisher.name), // Display the publisher name in the dropdown
                     );
+                
                   }).toList(),
                   onChanged: (newPublisher) {
                     setState(() {
                       selectedPublisher = newPublisher;
                     });
                   },
+                  validator: validatePublisher,
                 ),
 
                 Container(height: 8),
@@ -177,20 +210,21 @@ class _BookModifyState extends State<BookModify> {
                   child: ElevatedButton(
                     onPressed: () async {
                       if (isEditing) {
+                        if (formKey.currentState!.validate()) {
 
                         setState(() {
                           isLoading = true;
                         });
 
-                        final releaseDate = DateTime.parse(releaseDateController.text);
-                        final formattedReleaseDate = DateFormat('yyyy-MM-dd').format(releaseDate);
+                        // final releaseDate = DateTime.parse(releaseDateController.text);
+                        // final formattedReleaseDate = DateFormat('yyyy-MM-dd').format(releaseDate);
 
                         final book =  Book(
                           //Obs: estava dando erro 400 bad request. Tive que adicionar o controller nos
                           //TextField acima. Senão, o nome e a cidade seriam passados nulos.
                           name: nameController.text,
                           author: authorController.text,
-                          releaseDateTo: formattedReleaseDate,
+                          releaseDateTo: releaseDateController.text,
                           amount: int.parse(amountController.text),
                           publisherModelId: selectedPublisher!.id
                         );
@@ -225,22 +259,28 @@ class _BookModifyState extends State<BookModify> {
                               Navigator.of(context).pop();
                             }
                           });
+                        }
+
 
                       } else {
+
+                        if (formKey.currentState!.validate()) {
 
                         setState(() {
                           isLoading = true;
                         });
 
-                        final releaseDate = DateTime.parse(releaseDateController.text);
-                        final formattedReleaseDate = DateFormat('yyyy-MM-dd').format(releaseDate);
+                        // final releaseDate = DateTime.parse(releaseDateController.text);
+                        // final formattedReleaseDate = DateFormat('yyyy-MM-dd').format(releaseDate);
+
+                        
 
                         final book =  Book(
                           //Obs: estava dando erro 400 bad request. Tive que adicionar o controller nos
                           //TextField acima. Senão, o nome e a cidade seriam passados nulos.
                           name: nameController.text,
                           author: authorController.text,
-                          releaseDateTo: formattedReleaseDate,
+                          releaseDateTo: releaseDateController.text,
                           amount: int.parse(amountController.text),
                           publisherModelId: selectedPublisher!.id
                           
@@ -278,6 +318,8 @@ class _BookModifyState extends State<BookModify> {
                             }
                           });
 
+                        }
+
                       }
                     
                     },
@@ -302,6 +344,55 @@ class _BookModifyState extends State<BookModify> {
           ],
         ),
       ),
+      )
     );
   }
+
+  String? validateBookName(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Este campo é obrigatório';
+    } else if (value.length < 3) {
+      return 'Mínimo de 3 caracteres';
+    } else if (value.length > 50) {
+      return 'Máximo de 50 caracteres';
+    }
+    return null;
+  }
+
+  String? validateAuthorName(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Este campo é obrigatório';
+    } else if (value.length < 3) {
+      return 'Mínimo de 3 caracteres';
+    } else if (value.length > 50) {
+      return 'Máximo de 50 caracteres';
+    }
+    return null;
+  }
+
+  String? validateAmount(String? value) {
+  
+   if (value == null || value.isEmpty) {
+    return 'Este campo é obrigatório';
+  }
+
+  // Check if the value is a valid integer
+  int? intValue = int.tryParse(value);
+  if (intValue == null) {
+    return 'Este campo suporta apenas números';
+  }
+
+  if (intValue < 0) {
+    return 'Por favor, informe um valor acima de 0';
+  }
+    return null;
+  }
+
+  String? validatePublisher(Publisher? value) {
+    if (value == null) {
+      return 'Selecione uma editora';
+    } 
+    return null;
+  }
+
 }
