@@ -1,4 +1,4 @@
-import 'package:librelivro_front_flutter/models/publisher_model/Publisher.dart';
+import 'package:librelivro_front_flutter/models/publisher_model/publisher.dart';
 
 class Book<T> {
  

@@ -3,7 +3,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
-import 'package:librelivro_front_flutter/models/publisher_model/Publisher.dart';
+import 'package:librelivro_front_flutter/models/publisher_model/publisher.dart';
 
 
 import '../../services/publisher_service/publisher_service.dart';

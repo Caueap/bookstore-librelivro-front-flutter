@@ -1,14 +1,12 @@
 
 import 'dart:convert';
-
 import 'package:librelivro_front_flutter/components/book_api_response.dart';
-import 'package:librelivro_front_flutter/models/book_model/book_to_create.dart';
-import 'package:librelivro_front_flutter/models/book_model/books.dart';
+import 'package:librelivro_front_flutter/models/book_model/book.dart';
 import 'package:http/http.dart' as http;
 
 class BookService {
 
-  static const Api = 'http://192.168.1.2:8080/api2';
+  static const Api = 'http://192.168.1.3:8080/api2';
   final url = Uri.parse('$Api/book');
   
 

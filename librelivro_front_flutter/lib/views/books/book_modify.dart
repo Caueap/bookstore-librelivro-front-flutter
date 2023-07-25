@@ -4,12 +4,12 @@ import 'dart:ffi';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:librelivro_front_flutter/main.dart';
-import '../../models/book_model/books.dart';
-import 'package:librelivro_front_flutter/models/book_model/books.dart';
+import '../../models/book_model/book.dart';
+import 'package:librelivro_front_flutter/models/book_model/book.dart';
 
 import 'package:librelivro_front_flutter/services/publisher_service/publisher_service.dart';
 import '../../components/publisher_api_response.dart';
-import '../../models/publisher_model/Publisher.dart';
+import '../../models/publisher_model/publisher.dart';
 import 'package:intl/intl.dart';
 
 import '../../services/book_service/book_service.dart';

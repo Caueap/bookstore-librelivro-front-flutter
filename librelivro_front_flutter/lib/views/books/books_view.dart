@@ -1,7 +1,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
-import 'package:librelivro_front_flutter/models/book_model/books.dart';
+import 'package:librelivro_front_flutter/models/book_model/book.dart';
 
 import 'package:librelivro_front_flutter/views/books/book_modify.dart';
 import 'package:librelivro_front_flutter/views/books/books_delete.dart';

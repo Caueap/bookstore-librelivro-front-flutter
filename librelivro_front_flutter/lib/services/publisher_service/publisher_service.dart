@@ -1,13 +1,13 @@
 
 import 'dart:convert';
 
-import 'package:librelivro_front_flutter/models/publisher_model/Publisher.dart';
+import 'package:librelivro_front_flutter/models/publisher_model/publisher.dart';
 import 'package:librelivro_front_flutter/components/publisher_api_response.dart';
 import 'package:http/http.dart' as http;
 
 class PublisherService {
 
-  static const Api = 'http://192.168.1.2:8080/api2';
+  static const Api = 'http://192.168.1.3:8080/api2';
   final url = Uri.parse('$Api/publisher');
   
 
