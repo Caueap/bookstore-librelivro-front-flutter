@@ -2,25 +2,26 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:librelivro_front_flutter/services/user_service/user_service.dart';
-import 'package:librelivro_front_flutter/views/users/users_delete.dart';
-import 'package:librelivro_front_flutter/views/users/users_modify.dart';
+import 'package:librelivro_front_flutter/views/clients/users_delete.dart';
+import 'package:librelivro_front_flutter/views/clients/clients_modify.dart';
 
 import '../../components/navigation_drawer.dart';
 import '../../components/user_api_response.dart';
-import '../../models/user_model/User.dart';
+import '../../models/client_model/client.dart';
 
-class UsersView extends StatefulWidget {
+
+class ClientsView extends StatefulWidget {
   
 
   @override
-  State<UsersView> createState() => _UsersViewState();
+  State<ClientsView> createState() => _ClientsViewState();
 }
 
-class _UsersViewState extends State<UsersView> {
+class _ClientsViewState extends State<ClientsView> {
 
-  UserService get userService => GetIt.instance<UserService>();
+  ClientService get clientService => GetIt.instance<ClientService>();
 
-  late UserApiResponse<List<User>> userApiResponse;
+  late ClientApiResponse<List<Client>> clientApiResponse;
   bool isLoading = false;
 
     @override
@@ -35,7 +36,7 @@ class _UsersViewState extends State<UsersView> {
       
     });
     
-    userApiResponse = await userService.getUsers();
+    clientApiResponse = await clientService.getClients();
 
   
 
@@ -59,7 +60,7 @@ class _UsersViewState extends State<UsersView> {
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           Navigator.of(context)
-          .push(MaterialPageRoute(builder: (_) => UserModify()
+          .push(MaterialPageRoute(builder: (_) => ClientModify()
           )).then((_) {
             _fetchUsers();
           });
@@ -72,20 +73,20 @@ class _UsersViewState extends State<UsersView> {
             return Center(child: CircularProgressIndicator());
           }
 
-          if (userApiResponse.error) {
-            return Center(child: Text(userApiResponse.errorMessage));
+          if (clientApiResponse.error) {
+            return Center(child: Text(clientApiResponse.errorMessage));
           }
 
 
           return Padding(
             padding: const EdgeInsets.all(8.0),
             child: ListView.builder(
-              itemCount: userApiResponse.data!.length,
+              itemCount: clientApiResponse.data!.length,
               itemBuilder: (_, index) {
                 return Card(
                   child: ExpansionTile(
                     title: Text(
-                      userApiResponse.data![index].name,
+                      clientApiResponse.data![index].name,
                     style: TextStyle(color: Theme.of(context).primaryColor,
                     fontSize: 24)),
                     
@@ -103,9 +104,9 @@ class _UsersViewState extends State<UsersView> {
                         child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('Email: ${userApiResponse.data![index].email}'),
-                        Text('Cidade: ${userApiResponse.data![index].city}'),
-                        Text('Endereço: ${userApiResponse.data![index].address}'),
+                        Text('Email: ${clientApiResponse.data![index].email}'),
+                        Text('Cidade: ${clientApiResponse.data![index].city}'),
+                        Text('Endereço: ${clientApiResponse.data![index].address}'),
                       ],
                     ),
                         )
@@ -126,8 +127,8 @@ class _UsersViewState extends State<UsersView> {
                                   onPressed: () {
                                     Navigator.of(context)
                                     .push(MaterialPageRoute(
-                                      builder: (_) => UserModify(
-                                        id: userApiResponse.data?[index].id)))
+                                      builder: (_) => ClientModify(
+                                        id: clientApiResponse.data?[index].id)))
                                         .then((data) => {
                                           _fetchUsers()
                                         });
@@ -141,7 +142,7 @@ class _UsersViewState extends State<UsersView> {
                                       builder: (_) => UserDelete());
 
                                       if (result) {
-                                        final deleteResult = await userService.deleteUser(userApiResponse.data![index].id);
+                                        final deleteResult = await clientService.deleteUser(clientApiResponse.data![index].id);
 
                                         var message;
                                         if (deleteResult != null && deleteResult.data == true) {

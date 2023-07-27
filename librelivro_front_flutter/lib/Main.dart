@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:librelivro_front_flutter/custom_colors/custom_colors.dart';
 import 'package:librelivro_front_flutter/services/book_service/book_service.dart';
+import 'package:librelivro_front_flutter/services/book_service/rental_service.dart';
 import 'package:librelivro_front_flutter/services/publisher_service/publisher_service.dart';
 import 'package:librelivro_front_flutter/services/user_service/user_service.dart';
 import 'package:librelivro_front_flutter/views/dashboard.dart';
@@ -11,7 +12,9 @@ import 'package:librelivro_front_flutter/views/dashboard.dart';
 void setupLocator() {
   GetIt.instance.registerLazySingleton(() => PublisherService());
   GetIt.instance.registerLazySingleton(() => BookService());
-  GetIt.instance.registerLazySingleton(() => UserService());
+  GetIt.instance.registerLazySingleton(() => ClientService());
+  GetIt.instance.registerLazySingleton(() => RentalService());
+
    
 }
 

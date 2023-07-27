@@ -5,7 +5,7 @@ import 'package:librelivro_front_flutter/views/books/books_view.dart';
 import 'package:librelivro_front_flutter/views/dashboard.dart';
 import 'package:librelivro_front_flutter/views/publishers/publisher_view.dart';
 import 'package:librelivro_front_flutter/views/rentals/rentals_view.dart';
-import 'package:librelivro_front_flutter/views/users/users_view.dart';
+import 'package:librelivro_front_flutter/views/clients/clients_view.dart';
 
 class NavDrawer extends StatelessWidget {
 
@@ -81,7 +81,7 @@ class NavDrawer extends StatelessWidget {
         break;
         case 1:
           Navigator.of(context).push(MaterialPageRoute(
-            builder: (context) => UsersView()));
+            builder: (context) => ClientsView()));
         break;
         case 2:
           Navigator.of(context).push(MaterialPageRoute(

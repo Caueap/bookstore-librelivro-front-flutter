@@ -23,6 +23,8 @@ class PublisherModify extends StatefulWidget {
 class _PublisherModifyState extends State<PublisherModify> {
   PublisherService get publisherService => GetIt.instance<PublisherService>();
 
+  final GlobalKey<FormState> formKey = GlobalKey<FormState>();
+
   final TextEditingController nameController = TextEditingController();
   final TextEditingController cityController = TextEditingController();
 
@@ -31,11 +33,6 @@ class _PublisherModifyState extends State<PublisherModify> {
    String errorMessage = '';
    Publisher ?publisher;
 
-
-  
-
-    
-      
       @override
       void initState() {
         super.initState();
@@ -62,19 +59,8 @@ class _PublisherModifyState extends State<PublisherModify> {
         
       }
     
-
-  
-
-  
-
-
   @override
   Widget build(BuildContext context) {
-
-    
-
-    
-  
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -83,22 +69,27 @@ class _PublisherModifyState extends State<PublisherModify> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(12.0),
-        child: isLoading ? Center(child: CircularProgressIndicator()) : Column(
+        child: isLoading ? Center(child: CircularProgressIndicator())
+         : Form(
+          key: formKey,
+          child: Column(
         children: <Widget>[
-           TextField(
+           TextFormField(
             controller: nameController,
             decoration: InputDecoration(
               hintText: 'Nome da editora'
             ),
+            validator: validatePublisherName,
            ),
 
           Container(height: 8),
            
-           TextField(
+           TextFormField(
             controller: cityController,
             decoration: InputDecoration(
               hintText: 'Cidade da editora'
-            )
+            ),
+            validator: validateCity,
            ),
 
            Container(height: 16),
@@ -110,92 +101,100 @@ class _PublisherModifyState extends State<PublisherModify> {
               onPressed: () async {
                 if (isEditing) {
 
-                  setState(() {
-                    isLoading = true;
-                  });
+                  if (formKey.currentState!.validate()) {
 
-                  final publisher =  Publisher(
-                    //Obs: estava dando erro 400 bad request. Tive que adicionar o controller nos
-                    //TextField acima. Senão, o nome e a cidade seriam passados nulos.
-                    name: nameController.text,
-                    city: cityController.text 
-                  );
+                    setState(() {
+                      isLoading = true;
+                    });
 
-                  
-                  final publisherService = PublisherService();
-                  final result  = await publisherService.updatePublisher(widget.id!, publisher);
+                    final publisher =  Publisher(
+                      //Obs: estava dando erro 400 bad request. Tive que adicionar o controller nos
+                      //TextField acima. Senão, o nome e a cidade seriam passados nulos.
+                      name: nameController.text,
+                      city: cityController.text 
+                    );
 
-                  setState(() {
-                    isLoading = false;
-                  });
+                    
+                    final publisherService = PublisherService();
+                    final result  = await publisherService.updatePublisher(widget.id!, publisher);
 
-                  final text = result.error ? (result.errorMessage ?? 'Erro no modify') : 'Editora Atualizada!';
-                  
-                  showDialog(
-                    context: context,
-                     builder: (_) {
-                      return AlertDialog(
-                      title: Text('Success'),
-                      content: Text(text),
-                      actions: [
-                        TextButton(
-                          child: Text('Ok'),
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                          }) 
-                           
-                      ]
-                     );})
-                     .then((data) {
-                      if (result.data!) {
-                        Navigator.of(context).pop();
-                      }
-                     });
+                    setState(() {
+                      isLoading = false;
+                    });
+
+                    final text = result.error ? (result.errorMessage ?? 'Erro no modify') : 'Editora Atualizada!';
+                    
+                    showDialog(
+                      context: context,
+                      builder: (_) {
+                        return AlertDialog(
+                        title: Text('Success'),
+                        content: Text(text),
+                        actions: [
+                          TextButton(
+                            child: Text('Ok'),
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            }) 
+                            
+                        ]
+                      );})
+                      .then((data) {
+                        if (result.data!) {
+                          Navigator.of(context).pop();
+                        }
+                      });
+
+                  }
 
                 } else {
 
-                  setState(() {
-                    isLoading = true;
-                  });
+                   if (formKey.currentState!.validate()) {
 
-                  final publisher =  Publisher(
-                    //Obs: estava dando erro 400 bad request. Tive que adicionar o controller nos
-                    //TextField acima. Senão, o nome e a cidade seriam passados nulos.
-                    name: nameController.text,
-                    city: cityController.text 
-                  );
+                    setState(() {
+                      isLoading = true;
+                    });
 
-                  
-                  final publisherService = PublisherService();
-                  final result  = await publisherService.createPublisher(publisher);
+                    final publisher =  Publisher(
+                      //Obs: estava dando erro 400 bad request. Tive que adicionar o controller nos
+                      //TextField acima. Senão, o nome e a cidade seriam passados nulos.
+                      name: nameController.text,
+                      city: cityController.text 
+                    );
 
-                  setState(() {
-                    isLoading = false;
-                  });
+                    
+                    final publisherService = PublisherService();
+                    final result  = await publisherService.createPublisher(publisher);
 
-                  final text = result.error ? (result.errorMessage ?? 'Erro no modify') : 'Editora Cadastrada!';
-                  
-                  
-                  showDialog(
-                    context: context, 
-                     builder: (_) {
-                      return AlertDialog(
-                      title: Text('Success'),
-                      content: Text(text),
-                      actions: [
-                        TextButton(
-                          child: Text('Ok'),
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                          }) 
-                           
-                      ]
-                     );})
-                     .then((data) {
-                      if (result.data!) {
-                        Navigator.of(context).pop();
-                      }
-                     });
+                    setState(() {
+                      isLoading = false;
+                    });
+
+                    final text = result.error ? (result.errorMessage ?? 'Erro no modify') : 'Editora Cadastrada!';
+                    
+                    
+                    showDialog(
+                      context: context, 
+                      builder: (_) {
+                        return AlertDialog(
+                        title: Text('Success'),
+                        content: Text(text),
+                        actions: [
+                          TextButton(
+                            child: Text('Ok'),
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            }) 
+                            
+                        ]
+                      );})
+                      .then((data) {
+                        if (result.data!) {
+                          Navigator.of(context).pop();
+                        }
+                      });
+                   }
+
 
                 }
               
@@ -218,9 +217,31 @@ class _PublisherModifyState extends State<PublisherModify> {
            )
         ],
       ), 
+      )
       ) 
       
     );
   
+  }
+  String? validatePublisherName(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Este campo é obrigatório';
+    } else if (value.length < 3) {
+      return 'Mínimo de 3 caracteres';
+    } else if (value.length > 50) {
+      return 'Máximo de 50 caracteres';
+    }
+    return null;
+  }
+
+  String? validateCity(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Este campo é obrigatório';
+    } else if (value.length < 3) {
+      return 'Mínimo de 3 caracteres';
+    } else if (value.length > 50) {
+      return 'Máximo de 50 caracteres';
+    }
+    return null;
   }
 }

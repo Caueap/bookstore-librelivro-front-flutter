@@ -1,5 +1,5 @@
 
-class User<T> {
+class Client<T> {
 
   int id;
   String name;
@@ -7,7 +7,7 @@ class User<T> {
   String city;
   String address;
 
-  User({
+  Client({
     this.id = 0,
     this.name = '',
     this.email = '',
@@ -15,8 +15,8 @@ class User<T> {
     this.address = ''
   });
 
-  factory User.fromJson(Map<String, dynamic> item) {
-      return User(
+  factory Client.fromJson(Map<String, dynamic> item) {
+      return Client(
             id: item['id'],
             name: item['name'],
             email: item['email'],

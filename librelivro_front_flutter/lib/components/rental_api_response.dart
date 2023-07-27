@@ -1,9 +1,9 @@
-class ClientApiResponse<T> {
+class RentalApiResponse<T> {
   T ?data;
   String errorMessage;
   bool error;
 
-  ClientApiResponse({
+  RentalApiResponse({
     this.data,
     this.errorMessage = '',
     this.error=false

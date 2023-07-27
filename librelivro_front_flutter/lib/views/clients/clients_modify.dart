@@ -4,27 +4,28 @@ import 'package:get_it/get_it.dart';
 import 'package:librelivro_front_flutter/services/user_service/user_service.dart';
 
 import '../../components/user_api_response.dart';
-import '../../models/user_model/User.dart';
+
+import '../../models/client_model/client.dart';
 
 
 
-class UserModify extends StatefulWidget {
+class ClientModify extends StatefulWidget {
 
   int? id;
 
-  UserModify({this.id});
+  ClientModify({this.id});
 
   @override
-  State<UserModify> createState() => _UserModifyState();
+  State<ClientModify> createState() => _ClientModifyState();
 
   
 }
 
-class _UserModifyState extends State<UserModify> {
+class _ClientModifyState extends State<ClientModify> {
 
   // BookService get bookService => GetIt.instance<BookService>();
   // PublisherService get publisherService => GetIt.instance<PublisherService>();
-  UserService get userService => GetIt.instance<UserService>();
+  ClientService get userService => GetIt.instance<ClientService>();
 
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
@@ -39,7 +40,7 @@ class _UserModifyState extends State<UserModify> {
    bool get isEditing => widget.id != null;
    bool isLoading = false;
    String errorMessage = '';
-   User? user;
+   Client? client;
   
 
 
@@ -66,11 +67,11 @@ class _UserModifyState extends State<UserModify> {
           if (response.error) {
             errorMessage = response.errorMessage;
           }
-          user = response.data!;
-          nameController.text = user!.name;
-          emailController.text = user!.email;
-          cityController.text = user!.city;
-          addressController.text = user!.address;
+          client = response.data!;
+          nameController.text = client!.name;
+          emailController.text = client!.email;
+          cityController.text = client!.city;
+          addressController.text = client!.address;
           
         });
   }
@@ -96,6 +97,7 @@ class _UserModifyState extends State<UserModify> {
               decoration: InputDecoration(
                 hintText: 'Nome do usuário'
                 ),
+                validator: validateUserName,
                 
                 
               ),
@@ -107,6 +109,7 @@ class _UserModifyState extends State<UserModify> {
               decoration: InputDecoration(
                 hintText: 'Email'
                 ),
+                validator: validateEmail,
                 
                 
               ),
@@ -118,9 +121,9 @@ class _UserModifyState extends State<UserModify> {
               decoration: InputDecoration(
                 hintText: 'Cidade'
                 ),
+                validator: validateCity,
                
               ),
-
 
               Container(height: 8),
 
@@ -129,12 +132,11 @@ class _UserModifyState extends State<UserModify> {
               decoration: InputDecoration(
                 hintText: 'Endereço'
                 ),
+                validator: validateAddress,
                 
               ),
 
               Container(height: 8),
-
-              
 
                 Container(height: 8),
 
@@ -154,7 +156,7 @@ class _UserModifyState extends State<UserModify> {
                         // final releaseDate = DateTime.parse(releaseDateController.text);
                         // final formattedReleaseDate = DateFormat('yyyy-MM-dd').format(releaseDate);
 
-                        final user =  User(
+                        final client =  Client(
                           //Obs: estava dando erro 400 bad request. Tive que adicionar o controller nos
                           //TextField acima. Senão, o nome e a cidade seriam passados nulos.
                           name: nameController.text,
@@ -165,8 +167,8 @@ class _UserModifyState extends State<UserModify> {
                         );
 
                         
-                        final userService = UserService();
-                        final result  = await userService.updateUser(widget.id!, user);
+                        final clientService = ClientService();
+                        final result  = await clientService.updateUser(widget.id!, client);
 
                         setState(() {
                           isLoading = false;
@@ -196,10 +198,6 @@ class _UserModifyState extends State<UserModify> {
                           });
                         }
 
-                    
-                      
-
-
                       } else {
 
                         if (formKey.currentState!.validate()) {
@@ -212,8 +210,7 @@ class _UserModifyState extends State<UserModify> {
                         // final formattedReleaseDate = DateFormat('yyyy-MM-dd').format(releaseDate);
 
                         
-
-                        final user =  User(
+                        final client =  Client(
                           //Obs: estava dando erro 400 bad request. Tive que adicionar o controller nos
                           //TextField acima. Senão, o nome e a cidade seriam passados nulos.
                           name: nameController.text,
@@ -224,8 +221,8 @@ class _UserModifyState extends State<UserModify> {
                         );
 
                         
-                        final userService = UserService();
-                        final result  = await userService.createUser(user);
+                        final clientService = ClientService();
+                        final result  = await clientService.createUser(client);
 
                         setState(() {
                           isLoading = false;
@@ -285,51 +282,50 @@ class _UserModifyState extends State<UserModify> {
     );
   }
 
-  // String? validateBookName(String? value) {
-  //   if (value == null || value.isEmpty) {
-  //     return 'Este campo é obrigatório';
-  //   } else if (value.length < 3) {
-  //     return 'Mínimo de 3 caracteres';
-  //   } else if (value.length > 50) {
-  //     return 'Máximo de 50 caracteres';
-  //   }
-  //   return null;
-  // }
+  String? validateUserName(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Este campo é obrigatório';
+    } else if (value.length < 3) {
+      return 'Mínimo de 3 caracteres';
+    } else if (value.length > 50) {
+      return 'Máximo de 50 caracteres';
+    }
+    return null;
+  }
 
-  // String? validateAuthorName(String? value) {
-  //   if (value == null || value.isEmpty) {
-  //     return 'Este campo é obrigatório';
-  //   } else if (value.length < 3) {
-  //     return 'Mínimo de 3 caracteres';
-  //   } else if (value.length > 50) {
-  //     return 'Máximo de 50 caracteres';
-  //   }
-  //   return null;
-  // }
+  String? validateEmail(String? value) {
+    final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
 
-  // String? validateAmount(String? value) {
-  
-  //  if (value == null || value.isEmpty) {
-  //   return 'Este campo é obrigatório';
-  // }
+    if (value == null || value.isEmpty) {
+      return 'Este campo é obrigatório';
+    } else if (!emailRegex.hasMatch(value)) {
+      return 'Por favor, informe um formato de Email válido';
+    }
 
-  // // Check if the value is a valid integer
-  // int? intValue = int.tryParse(value);
-  // if (intValue == null) {
-  //   return 'Este campo suporta apenas números';
-  // }
+    return null;
+    
+  }
 
-  // if (intValue < 0) {
-  //   return 'Por favor, informe um valor acima de 0';
-  // }
-  //   return null;
-  // }
+  String? validateCity(String? value) {
+   if (value == null || value.isEmpty) {
+      return 'Este campo é obrigatório';
+    } else if (value.length < 3) {
+      return 'Mínimo de 3 caracteres';
+    } else if (value.length > 50) {
+      return 'Máximo de 50 caracteres';
+    }
+    return null;
+  }
 
-  // String? validatePublisher(Publisher? value) {
-  //   if (value == null) {
-  //     return 'Selecione uma editora';
-  //   } 
-  //   return null;
-  // }
+  String? validateAddress(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Este campo é obrigatório';
+    } else if (value.length < 3) {
+      return 'Mínimo de 3 caracteres';
+    } else if (value.length > 50) {
+      return 'Máximo de 50 caracteres';
+    }
+    return null;
+  }
 
 }
