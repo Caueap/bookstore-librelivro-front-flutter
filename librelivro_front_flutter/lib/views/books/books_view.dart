@@ -206,19 +206,20 @@ class _BooksViewState extends State<BooksView> {
 
                                       if (result) {
                                         final deleteResult = await bookService.deleteBook(bookApiResponse.data![index].id);
-
+                                        var mainMessage = 'Sucesso!';
                                         var message;
                                         if (deleteResult != null && deleteResult.data == true) {
                                            message = 'Livro excluido';
                                         } else {
                                           message = deleteResult.errorMessage;
+                                          mainMessage = 'Ops...';
                                         }
 
                                         showDialog(
                                           context: context,
                                           builder: (_) {
                                             return AlertDialog(
-                                            title: Text('Sucesso!'),
+                                            title: Text(mainMessage),
                                             content: Text(message),
                                             actions: [
                                               TextButton(

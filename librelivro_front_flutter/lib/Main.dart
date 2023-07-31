@@ -1,5 +1,6 @@
 
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get_it/get_it.dart';
 import 'package:librelivro_front_flutter/custom_colors/custom_colors.dart';
 import 'package:librelivro_front_flutter/services/book_service/book_service.dart';
@@ -33,6 +34,12 @@ class App extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: teal
       ),
+      localizationsDelegates: [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate
+      ],
+      supportedLocales: [const Locale('pt', 'BR')],
+      
       home: Dashboard(),
     );
   }

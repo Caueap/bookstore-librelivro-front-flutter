@@ -161,7 +161,9 @@ class _BookModifyState extends State<BookModify> {
                       context: context,
                       initialDate: DateTime.now(),
                       firstDate: DateTime(0000),
-                      lastDate: DateTime.now());
+                      lastDate: DateTime.now()
+                      );
+                      
 
                   if (pickeddate != null) {
                     setState(() {
@@ -169,6 +171,7 @@ class _BookModifyState extends State<BookModify> {
                     });
                   }
                 },
+                validator: validateReleaseDate,
               ),
 
 
@@ -366,6 +369,13 @@ class _BookModifyState extends State<BookModify> {
       return 'Mínimo de 3 caracteres';
     } else if (value.length > 50) {
       return 'Máximo de 50 caracteres';
+    }
+    return null;
+  }
+
+  String? validateReleaseDate(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Este campo é obrigatório';
     }
     return null;
   }

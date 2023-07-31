@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:intl/intl.dart';
 import 'package:librelivro_front_flutter/views/rentals/rentals_delete.dart';
-import 'package:librelivro_front_flutter/views/rentals/rentals_modify.dart';
+import 'package:librelivro_front_flutter/views/rentals/rentals_create.dart';
 import '../../components/navigation_drawer.dart';
 import '../../components/rental_api_response.dart';
 import '../../models/book_model/book.dart';
@@ -121,7 +121,7 @@ class _RentalsViewState extends State<RentalsView> {
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           Navigator.of(context)
-          .push(MaterialPageRoute(builder: (_) => RentalModify()
+          .push(MaterialPageRoute(builder: (_) => RentalCreate()
           )).then((_) {
             _fetchRentals();
           });
@@ -241,18 +241,20 @@ class _RentalsViewState extends State<RentalsView> {
                                       if (result) {
                                         final deleteResult = await rentalService.deleteRental(rentalsApiResponse.data![index].id);
 
+                                        var mainMessage = 'Sucesso!';
                                         var message;
                                         if (deleteResult != null && deleteResult.data == true) {
-                                           message = 'Aluguel excluido';
+                                          message = 'Aluguel excluido';
                                         } else {
                                           message = deleteResult.errorMessage;
+                                          mainMessage = 'Ops...';
                                         }
 
                                         showDialog(
                                           context: context,
                                           builder: (_) {
                                             return AlertDialog(
-                                            title: Text('Sucesso!'),
+                                            title: Text(mainMessage),
                                             content: Text(message),
                                             actions: [
                                               TextButton(

@@ -19,21 +19,21 @@ import '../../services/user_service/user_service.dart';
 
 
 
-class RentalModify extends StatefulWidget {
+class RentalCreate extends StatefulWidget {
 
 
     
   int? id;
 
-  RentalModify({this.id});
+  RentalCreate({this.id});
 
   @override
-  State<RentalModify> createState() => _RentalModifyState();
+  State<RentalCreate> createState() => _RentalCreateState();
 
   
 }
 
-class _RentalModifyState extends State<RentalModify> {
+class _RentalCreateState extends State<RentalCreate> {
 
 
   RentalService get rentalService => GetIt.instance<RentalService>();
@@ -117,34 +117,7 @@ class _RentalModifyState extends State<RentalModify> {
     });
   }
 
-  // getBookByIdInModify () {
-
-  //  setState(() {
-  //         isLoading = true;
-  //       });
-
-  //       bookService.getBookById(widget.id ?? 0)
-  //       .then((response) {
-          
-  //         setState(() {
-  //         isLoading = false;
-  //       });
-
-  //         if (response.error) {
-  //           errorMessage = response.errorMessage;
-  //         }
-  //         book = response.data!;
-  //         nameController.text = book!.name;
-  //         authorController.text = book!.author;
-  //         releaseDateController.text = book!.releaseDateFrom.toString();
-  //         amountController.text = book!.amount.toString();
-  //         rentedAmountController.text = book!.rentedAmount.toString();
-          
-          
-          
-
-  //       });
-  // }
+ 
 
   
   @override
@@ -180,6 +153,7 @@ class _RentalModifyState extends State<RentalModify> {
                     });
                   }
                 },
+                validator: validateRentalDate,
               ),
 
               Container(height: 8),
@@ -202,6 +176,7 @@ class _RentalModifyState extends State<RentalModify> {
                     });
                   }
                 },
+                validator: validateExpectedDeliveryDate,
               ),
 
               DropdownButtonFormField<Book>(
@@ -219,7 +194,7 @@ class _RentalModifyState extends State<RentalModify> {
                       selectedBook = newBook;
                     });
                   },
-                  // validator: validatePublisher,
+                  validator: validateBook,
                 ),
 
                 Container(height: 8),
@@ -239,7 +214,7 @@ class _RentalModifyState extends State<RentalModify> {
                       selectedClient = newClient;
                     });
                   },
-                  // validator: validatePublisher,
+                  validator: validateClient,
                 ),
 
                 Container(height: 8),
@@ -251,58 +226,7 @@ class _RentalModifyState extends State<RentalModify> {
                   height: 35,
                   child: ElevatedButton(
                     onPressed: () async {
-                      if (isEditing) {
-                        // if (formKey.currentState!.validate()) {
-
-                        // setState(() {
-                        //   isLoading = true;
-                        // });
-
-                        
-
-                        // final book =  Book(
-                          
-                        //   name: nameController.text,
-                        //   author: authorController.text,
-                        //   releaseDateTo: releaseDateController.text,
-                        //   amount: int.parse(amountController.text),
-                        //   publisherModelId: selectedPublisher!.id
-                        // );
-
-                        
-                        // final bookService = BookService();
-                        // final result  = await bookService.updateBook(widget.id!, book);
-
-                        // setState(() {
-                        //   isLoading = false;
-                        // });
-
-                        // final text = result.error ? (result.errorMessage ?? 'Erro no modify') : 'Livro Atualizado!';
-                        
-                        // showDialog(
-                        //   context: context,
-                        //   builder: (_) {
-                        //     return AlertDialog(
-                        //     title: Text('Success'),
-                        //     content: Text(text),
-                        //     actions: [
-                        //       TextButton(
-                        //         child: Text('Ok'),
-                        //         onPressed: () {
-                        //           Navigator.of(context).pop();
-                        //         }) 
-                                
-                        //     ]
-                        //   );})
-                        //   .then((data) {
-                        //     if (result.data!) {
-                        //       Navigator.of(context).pop();
-                        //     }
-                        //   });
-                        // }
-
-
-                      } else {
+                      
 
                         if (formKey.currentState!.validate()) {
 
@@ -360,9 +284,9 @@ class _RentalModifyState extends State<RentalModify> {
 
                         }
 
-                      }
+                      },
                     
-                    },
+                    
                       
                       style: ButtonStyle(
                         backgroundColor: MaterialStateProperty
@@ -388,16 +312,34 @@ class _RentalModifyState extends State<RentalModify> {
     );
   }
 
-  // String? validateBookName(String? value) {
-  //   if (value == null || value.isEmpty) {
-  //     return 'Este campo é obrigatório';
-  //   } else if (value.length < 3) {
-  //     return 'Mínimo de 3 caracteres';
-  //   } else if (value.length > 50) {
-  //     return 'Máximo de 50 caracteres';
-  //   }
-  //   return null;
-  // }
+  String? validateRentalDate(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Este campo é obrigatório';
+    }
+    return null;
+  }
+
+  String? validateExpectedDeliveryDate(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Este campo é obrigatório';
+    }
+    return null;
+  }
+
+  String? validateBook(Book? value) {
+    if (value == null) {
+      return 'Selecione um livro';
+    }
+    return null;
+  }
+
+  String? validateClient(Client? value) {
+    if (value == null) {
+      return 'Selecione um usuário';
+    }
+    return null;
+  }
+  
 
   // String? validateAuthorName(String? value) {
   //   if (value == null || value.isEmpty) {
