@@ -87,7 +87,7 @@ class _BooksViewState extends State<BooksView> {
                     title: Text(
                       bookApiResponse.data![index].name,
                     style: TextStyle(color: Theme.of(context).primaryColor,
-                    fontSize: 24)),
+                    fontSize: 20)),
                     
                     children: [
                       Align(

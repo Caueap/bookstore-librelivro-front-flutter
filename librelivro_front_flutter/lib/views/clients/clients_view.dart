@@ -88,7 +88,7 @@ class _ClientsViewState extends State<ClientsView> {
                     title: Text(
                       clientApiResponse.data![index].name,
                     style: TextStyle(color: Theme.of(context).primaryColor,
-                    fontSize: 24)),
+                    fontSize: 20)),
                     
                     children: [
                       Align(

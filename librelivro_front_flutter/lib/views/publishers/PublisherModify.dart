@@ -164,7 +164,7 @@ class _PublisherModifyState extends State<PublisherModify> {
 
                     
                     final publisherService = PublisherService();
-                    final result  = await publisherService.createPublisher(publisher);
+                    final result  = await publisherService.createPublisher(publisher);  
 
                     setState(() {
                       isLoading = false;

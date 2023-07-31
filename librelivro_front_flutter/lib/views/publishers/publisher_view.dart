@@ -91,7 +91,8 @@ class _PublisherViewState extends State<PublisherView> {
                           title: Text(
                             _apiResponse.data![index].name,
                             
-                            style: TextStyle(color: Theme.of(context).primaryColor),
+                            style: TextStyle(color: Theme.of(context).primaryColor,
+                            fontSize: 20),
                           ),
                           subtitle: Text(
                             '${_apiResponse.data![index].city}'

@@ -6,7 +6,7 @@ import '../../models/client_model/client.dart';
 
 class ClientService {
 
-  static const Api = 'http://192.168.1.3:8080/api2';
+  static const Api = 'http://192.168.1.5:8080/api2';
   final url = Uri.parse('$Api/client');
   
 
