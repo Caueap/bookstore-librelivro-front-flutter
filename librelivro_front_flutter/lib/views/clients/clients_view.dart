@@ -1,10 +1,11 @@
 
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:librelivro_front_flutter/services/user_service/user_service.dart';
 import 'package:librelivro_front_flutter/views/clients/users_delete.dart';
 import 'package:librelivro_front_flutter/views/clients/clients_modify.dart';
-
 import '../../components/navigation_drawer.dart';
 import '../../components/user_api_response.dart';
 import '../../models/client_model/client.dart';
@@ -21,12 +22,17 @@ class _ClientsViewState extends State<ClientsView> {
 
   ClientService get clientService => GetIt.instance<ClientService>();
 
+  TextEditingController searchController = TextEditingController();
+
   late ClientApiResponse<List<Client>> clientApiResponse;
+  List<Client>? filteredClients;
   bool isLoading = false;
+  Timer? _debounce;
 
     @override
   void initState() {
     _fetchUsers();
+    searchController.addListener(onSearchChanged);
     super.initState();
   }
  
@@ -37,6 +43,7 @@ class _ClientsViewState extends State<ClientsView> {
     });
     
     clientApiResponse = await clientService.getClients();
+    filteredClients = clientApiResponse.data ?? [];
 
   
 
@@ -44,6 +51,34 @@ class _ClientsViewState extends State<ClientsView> {
     setState(() {
       isLoading = false;
       
+    });
+  }
+
+  void onSearchChanged() {
+    if (_debounce?.isActive ?? false) _debounce?.cancel();
+    _debounce = Timer(const Duration(milliseconds: 500), () {
+      setState(() {
+        if (searchController.text.isEmpty) {
+          filteredClients = clientApiResponse.data ?? [];
+        } else {
+          filteredClients = (clientApiResponse.data ?? [])
+              .where((client) =>
+                  client.name
+                      .toLowerCase()
+                      .contains(searchController.text.toLowerCase()) ||
+                  client.email
+                      .toLowerCase()
+                      .contains(searchController.text.toLowerCase()) ||
+                  client.city
+                      .toLowerCase()
+                      .contains(searchController.text.toLowerCase()) ||    
+                  client.address
+                      .toLowerCase()
+                      .contains(searchController.text.toLowerCase()))    
+
+              .toList();
+        }
+      });
     });
   }
 
@@ -80,13 +115,32 @@ class _ClientsViewState extends State<ClientsView> {
 
           return Padding(
             padding: const EdgeInsets.all(8.0),
+            child: Column(
+              children: [
+                TextField(
+              controller: searchController,
+              decoration: InputDecoration(
+                hintText: 'Pesquisar',
+                prefixIcon: Icon(Icons.search),
+                contentPadding: EdgeInsets.symmetric(vertical: 16.0)
+              ),
+              onChanged: (value) {
+                // Call the search method when the user types
+                onSearchChanged();
+              },
+               
+            ),
+              
+            Container(height: 8),
+
+            Expanded(
             child: ListView.builder(
-              itemCount: clientApiResponse.data!.length,
+              itemCount: filteredClients!.length,
               itemBuilder: (_, index) {
                 return Card(
                   child: ExpansionTile(
                     title: Text(
-                      clientApiResponse.data![index].name,
+                      filteredClients![index].name,
                     style: TextStyle(color: Theme.of(context).primaryColor,
                     fontSize: 20)),
                     
@@ -104,9 +158,9 @@ class _ClientsViewState extends State<ClientsView> {
                         child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('Email: ${clientApiResponse.data![index].email}'),
-                        Text('Cidade: ${clientApiResponse.data![index].city}'),
-                        Text('Endereço: ${clientApiResponse.data![index].address}'),
+                        Text('Email: ${filteredClients![index].email}'),
+                        Text('Cidade: ${filteredClients![index].city}'),
+                        Text('Endereço: ${filteredClients![index].address}'),
                       ],
                     ),
                         )
@@ -182,6 +236,9 @@ class _ClientsViewState extends State<ClientsView> {
                   ),
                 );
               })
+            )
+              ]
+            )
               );
         } ),
     );

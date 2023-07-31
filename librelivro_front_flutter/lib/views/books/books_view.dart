@@ -1,4 +1,6 @@
 
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:librelivro_front_flutter/models/book_model/book.dart';
@@ -21,12 +23,17 @@ class _BooksViewState extends State<BooksView> {
   
   BookService get bookService => GetIt.instance<BookService>();
 
+  TextEditingController searchController = TextEditingController();
+
   late BookApiResponse<List<Book>> bookApiResponse;
+  List<Book>? filteredBooks;
   bool isLoading = false;
+  Timer? _debounce;
 
     @override
   void initState() {
     _fetchBooks();
+    searchController.addListener(onSearchChanged);
     super.initState();
   }
  
@@ -37,6 +44,7 @@ class _BooksViewState extends State<BooksView> {
     });
     
     bookApiResponse = await bookService.getBooks();
+    filteredBooks = bookApiResponse.data ?? [];
 
   
 
@@ -44,6 +52,39 @@ class _BooksViewState extends State<BooksView> {
     setState(() {
       isLoading = false;
       
+    });
+  }
+
+  void onSearchChanged() {
+    if (_debounce?.isActive ?? false) _debounce?.cancel();
+    _debounce = Timer(const Duration(milliseconds: 500), () {
+      setState(() {
+        if (searchController.text.isEmpty) {
+          filteredBooks = bookApiResponse.data ?? [];
+        } else {
+          filteredBooks = (bookApiResponse.data ?? [])
+              .where((book) =>
+                  book.name
+                      .toLowerCase()
+                      .contains(searchController.text.toLowerCase()) ||
+                  book.author
+                      .toLowerCase()
+                      .contains(searchController.text.toLowerCase()) ||
+                  book.releaseDateFrom
+                      .toLowerCase()
+                      .contains(searchController.text.toLowerCase()) ||    
+                  book.amount.toString()
+                      .toLowerCase()
+                      .contains(searchController.text.toLowerCase()) ||
+                  book.rentedAmount.toString()
+                      .toLowerCase()
+                      .contains(searchController.text.toLowerCase()) || 
+                  book.publisherModel!.name
+                      .toLowerCase()
+                      .contains(searchController.text.toLowerCase()))    
+              .toList();
+        }
+      });
     });
   }
 
@@ -79,13 +120,34 @@ class _BooksViewState extends State<BooksView> {
 
           return Padding(
             padding: const EdgeInsets.all(8.0),
-            child: ListView.builder(
-              itemCount: bookApiResponse.data!.length,
+            child: Column(
+              children: [
+                TextField(
+              controller: searchController,
+              decoration: InputDecoration(
+                hintText: 'Pesquisar',
+                prefixIcon: Icon(Icons.search),
+                contentPadding: EdgeInsets.symmetric(vertical: 16.0)
+              ),
+              onChanged: (value) {
+                // Call the search method when the user types
+                onSearchChanged();
+              },
+               
+            ),
+
+            Container(height: 8),
+              
+
+
+            Expanded(
+              child: ListView.builder(
+              itemCount: filteredBooks!.length,
               itemBuilder: (_, index) {
                 return Card(
                   child: ExpansionTile(
                     title: Text(
-                      bookApiResponse.data![index].name,
+                      filteredBooks![index].name,
                     style: TextStyle(color: Theme.of(context).primaryColor,
                     fontSize: 20)),
                     
@@ -103,11 +165,11 @@ class _BooksViewState extends State<BooksView> {
                         child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('Autor: ${bookApiResponse.data![index].author}'),
-                        Text('Data de lançamento: ${bookApiResponse.data![index].releaseDateFrom}'),
-                        Text('Quantidade em estoque: ${bookApiResponse.data![index].amount}'),
-                        Text('Quantidade Alugada: ${bookApiResponse.data![index].rentedAmount}'),
-                        Text('Editora: ${bookApiResponse.data![index].publisherModel!.name}'),
+                        Text('Autor: ${filteredBooks![index].author}'),
+                        Text('Data de lançamento: ${filteredBooks![index].releaseDateFrom}'),
+                        Text('Quantidade em estoque: ${filteredBooks![index].amount}'),
+                        Text('Quantidade Alugada: ${filteredBooks![index].rentedAmount}'),
+                        Text('Editora: ${filteredBooks![index].publisherModel!.name}'),
                       ],
                     ),
                         )
@@ -183,6 +245,9 @@ class _BooksViewState extends State<BooksView> {
                   ),
                 );
               })
+            )
+              ]
+            )
               );
         } ),
     );

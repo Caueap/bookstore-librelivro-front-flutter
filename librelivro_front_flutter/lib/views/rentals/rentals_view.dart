@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:intl/intl.dart';
@@ -27,9 +29,12 @@ class _RentalsViewState extends State<RentalsView> {
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
   RentalService get rentalService => GetIt.instance<RentalService>();
+
+  TextEditingController searchController = TextEditingController();
   
 
   late RentalApiResponse<List<Rental>> rentalsApiResponse;
+  List<Rental>? filteredRentals;
   bool isLoading = false;
    String errorMessage = '';
    Rental? rental;
@@ -38,6 +43,7 @@ class _RentalsViewState extends State<RentalsView> {
   String rentalDate = '';
   String expectedDeliveryDate = '';
   String deliveryDate = '';
+  Timer? _debounce;
 
 
 
@@ -48,7 +54,7 @@ class _RentalsViewState extends State<RentalsView> {
     @override
   void initState() {
     _fetchRentals();
-
+    searchController.addListener(onSearchChanged);
     
     super.initState();
   }
@@ -60,7 +66,7 @@ class _RentalsViewState extends State<RentalsView> {
     });
     
     rentalsApiResponse = await rentalService.getRentals();
-     
+    filteredRentals = rentalsApiResponse.data ?? [];
     
 
   
@@ -72,34 +78,38 @@ class _RentalsViewState extends State<RentalsView> {
     });
   }
 
-  // getRentalByIdInView () {
-
-  //  setState(() {
-  //         isLoading = true;
-  //       });
-
-  //       rentalService.getRentalById(widget.id ?? 0)
-  //       .then((response) {
-          
-  //         setState(() {
-  //         isLoading = false;
-  //       });
-
-  //         if (response.error) {
-  //           errorMessage = response.errorMessage;
-  //         }
-  //         rental = response.data;
-  //         rentalDate = rental?.rentalDate ?? '';
-  //         expectedDeliveryDate = rental?.expectedDeliveryDate ?? '';
-  //         deliveryDate = rental?.deliveryDate ?? '';
-  //         book = rental?.bookModel;
-  //         client = rental?.clientModel;
-          
-          
-        
-  //       });
-  // }
-
+  void onSearchChanged() {
+    if (_debounce?.isActive ?? false) _debounce?.cancel();
+    _debounce = Timer(const Duration(milliseconds: 500), () {
+      setState(() {
+        if (searchController.text.isEmpty) {
+          filteredRentals = rentalsApiResponse.data ?? [];
+        } else {
+          filteredRentals = (rentalsApiResponse.data ?? [])
+              .where((rental) =>
+                  rental.rentalDate
+                      .toLowerCase()
+                      .contains(searchController.text.toLowerCase()) ||
+                  rental.expectedDeliveryDate
+                      .toLowerCase()
+                      .contains(searchController.text.toLowerCase()) ||
+                  rental.deliveryDate
+                      .toLowerCase()
+                      .contains(searchController.text.toLowerCase()) ||    
+                  rental.status
+                      .toLowerCase()
+                      .contains(searchController.text.toLowerCase()) ||
+                  rental.bookModel!.name
+                      .toLowerCase()
+                      .contains(searchController.text.toLowerCase()) || 
+                  rental.clientModel!.name
+                      .toLowerCase()
+                      .contains(searchController.text.toLowerCase()))    
+              .toList();
+        }
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -131,8 +141,27 @@ class _RentalsViewState extends State<RentalsView> {
 
           return Padding(
             padding: const EdgeInsets.all(8.0),
+            child: Column(
+              children: [
+                TextField(
+              controller: searchController,
+              decoration: InputDecoration(
+                hintText: 'Pesquisar',
+                prefixIcon: Icon(Icons.search),
+                contentPadding: EdgeInsets.symmetric(vertical: 16.0)
+              ),
+              onChanged: (value) {
+                // Call the search method when the user types
+                onSearchChanged();
+              },
+               
+            ),
+              
+              Container(height: 8),
+
+            Expanded(
             child: ListView.builder(
-              itemCount: rentalsApiResponse.data!.length,
+              itemCount: filteredRentals!.length,
               itemBuilder: (_, index) {
                 final rental = rentalsApiResponse.data![index];
                 final rentalStatus = rental.status;
@@ -141,7 +170,7 @@ class _RentalsViewState extends State<RentalsView> {
                 return Card(
                   child: ExpansionTile(
                     title: Text(
-                      rentalsApiResponse.data![index].rentalDate,
+                      filteredRentals![index].bookModel!.name,
                     style: TextStyle(color: Theme.of(context).primaryColor,
                     fontSize: 20)),
                     
@@ -159,11 +188,11 @@ class _RentalsViewState extends State<RentalsView> {
                         child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('Data esperada de devolução: ${rentalsApiResponse.data![index].expectedDeliveryDate}'),
-                        Text('Data de devolução: ${rentalsApiResponse.data?[index].deliveryDate}'),
-                        Text('Status: ${rentalsApiResponse.data![index].status}'),
-                        Text('Livro: ${rentalsApiResponse.data![index].bookModel!.name}'),
-                        Text('Usuário: ${rentalsApiResponse.data![index].clientModel!.name}'),
+                        Text('Data do aluguel: ${filteredRentals![index].rentalDate}'),
+                        Text('Data esperada de devolução: ${filteredRentals![index].expectedDeliveryDate}'),
+                        Text('Data de devolução: ${filteredRentals?[index].deliveryDate}'),
+                        Text('Status: ${filteredRentals![index].status}'),
+                        Text('Usuário: ${filteredRentals![index].clientModel!.name}'),
                       ],
                     ),
                         )
@@ -250,9 +279,16 @@ class _RentalsViewState extends State<RentalsView> {
                   ),
                 );
               })
-              );
-        } ),
+              
+          )
+          ]
+          )
+            );
+        }
+              )
     );
+              
+      
   }
   handleRentalId(int rentalId) async {
 

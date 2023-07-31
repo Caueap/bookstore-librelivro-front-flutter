@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:librelivro_front_flutter/components/navigation_drawer.dart';
@@ -20,15 +22,20 @@ class PublisherView extends StatefulWidget {
 class _PublisherViewState extends State<PublisherView> {
   PublisherService get publisherService => GetIt.instance<PublisherService>();
 
+  TextEditingController searchController = TextEditingController();
   
 
-  late PublisherApiResponse<List<Publisher>> _apiResponse;
+  late PublisherApiResponse<List<Publisher>> apiResponse;
+  List<Publisher>? filteredPublishers;
   bool _isLoading = false;
+  Timer? _debounce;
   
 
   @override
   void initState() {
     _fetchPublishers();
+    searchController.addListener(onSearchChanged);
+    
     super.initState();
   }
 
@@ -39,8 +46,8 @@ class _PublisherViewState extends State<PublisherView> {
       
     });
     
-    _apiResponse = await publisherService.getPublishers();
-
+    apiResponse = await publisherService.getPublishers();
+     filteredPublishers = apiResponse.data ?? [];
   
 
     // await Future.delayed(Duration(seconds: 3));
@@ -50,6 +57,29 @@ class _PublisherViewState extends State<PublisherView> {
     });
   }
 
+   void onSearchChanged() {
+    if (_debounce?.isActive ?? false) _debounce?.cancel();
+    _debounce = Timer(const Duration(milliseconds: 500), () {
+      setState(() {
+        if (searchController.text.isEmpty) {
+          filteredPublishers = apiResponse.data ?? [];
+        } else {
+          filteredPublishers = (apiResponse.data ?? [])
+              .where((publisher) =>
+                  publisher.name
+                      .toLowerCase()
+                      .contains(searchController.text.toLowerCase()) ||
+                  publisher.city
+                      .toLowerCase()
+                      .contains(searchController.text.toLowerCase()))
+              .toList();
+        }
+      });
+    });
+  }
+
+   
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -58,6 +88,7 @@ class _PublisherViewState extends State<PublisherView> {
         title: Text(
           'Editoras',
         ),
+        
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
@@ -76,97 +107,119 @@ class _PublisherViewState extends State<PublisherView> {
             return Center(child: CircularProgressIndicator());
           }
 
-          if (_apiResponse.error) {
-            return Center(child: Text(_apiResponse.errorMessage));
+          if (apiResponse.error) {
+            return Center(child: Text(apiResponse.errorMessage));
           }
 
           return Padding(
             padding: const EdgeInsets.all(8.0),
-            child: ListView.builder(
-                  //  separatorBuilder: (_, __) => Divider(height: 1, color: Colors.green),
-                   itemCount: _apiResponse.data!.length,
-                   itemBuilder: (_, index) {
-                    return Card(
-                      child: ExpansionTile(
-                          title: Text(
-                            _apiResponse.data![index].name,
-                            
-                            style: TextStyle(color: Theme.of(context).primaryColor,
-                            fontSize: 20),
-                          ),
-                          subtitle: Text(
-                            '${_apiResponse.data![index].city}'
-                          ),
-                          children: [
-                            Align(
-                            alignment: Alignment.centerRight,  
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: [
-                                IconButton(
-                                  icon: Icon(Icons.edit,
-                                  color: Theme.of(context).primaryColor),
-                                  
-                                  onPressed: () {
-                                    Navigator.of(context)
-                                    .push(MaterialPageRoute(
-                                      builder: (_) => PublisherModify(
-                                        id: _apiResponse.data?[index].id)))
-                                        .then((data) => {
-                                          _fetchPublishers()
-                                        });
-                                        } ,
-                                      ),
-                                  IconButton(
-                                  icon: Icon(Icons.delete, color: Colors.red),
-                                  onPressed: () async  {
-                                    final result = await showDialog(
-                                      context: context,
-                                      builder: (_) => DeletePublisher());
+            child: Column(
+              children: [
+                TextField(
+              controller: searchController,
+              decoration: InputDecoration(
+                hintText: 'Pesquisar',
+                prefixIcon: Icon(Icons.search),
+                contentPadding: EdgeInsets.symmetric(vertical: 16.0)
+              ),
+              onChanged: (value) {
+                // Call the search method when the user types
+                onSearchChanged();
+              },
+               
+            ),
 
-                                      if (result) {
-                                        final deleteResult = await publisherService.deletePublisher(_apiResponse.data![index].id);
+            Container(height: 8),
 
-                                        var message;
-                                        if (deleteResult != null && deleteResult.data == true) {
-                                           message = 'Editora excluida';
-                                        } else {
-                                          message = deleteResult.errorMessage;
-                                        }
-
-                                        showDialog(
-                                          context: context,
-                                          builder: (_) {
-                                            return AlertDialog(
-                                            title: Text('Sucesso!'),
-                                            content: Text(message),
-                                            actions: [
-                                              TextButton(
-                                                child: Text('Ok'),
-                                                onPressed: () {
-                                                  Navigator.of(context).pop();
-                                                }) 
-                                                
-                                            ]
-                                          );})
-                                          .then((data) {
-                                            if (deleteResult.data!) {
-                                              _fetchPublishers();
-                                            }
-                                          });
-                                      }
-                                      print(result);
-                                      return result;  
-                                  })],
+            Expanded(
+              child: ListView.builder(
+                      //  separatorBuilder: (_, __) => Divider(height: 1, color: Colors.green),
+                       itemCount: filteredPublishers?.length,
+                       itemBuilder: (_, index) {
+                        return Card(
+                          child: ExpansionTile(
+                              title: Text(
+                                filteredPublishers![index].name,
                                 
-                            
-                            ),
-                          )],
-                          
-                      ),
-                    );
-                    }
-                    )
+                                style: TextStyle(color: Theme.of(context).primaryColor,
+                                fontSize: 20),
+                              ),
+                              subtitle: Text(
+                                '${filteredPublishers![index].city}'
+                              ),
+                              children: [
+                                Align(
+                                alignment: Alignment.centerRight,  
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: [
+                                    IconButton(
+                                      icon: Icon(Icons.edit,
+                                      color: Theme.of(context).primaryColor),
+                                      
+                                      onPressed: () {
+                                        Navigator.of(context)
+                                        .push(MaterialPageRoute(
+                                          builder: (_) => PublisherModify(
+                                            id: apiResponse.data![index].id)))
+                                            .then((data) => {
+                                              _fetchPublishers()
+                                            });
+                                            } ,
+                                          ),
+                                      IconButton(
+                                      icon: Icon(Icons.delete, color: Colors.red),
+                                      onPressed: () async  {
+                                        final result = await showDialog(
+                                          context: context,
+                                          builder: (_) => DeletePublisher());
+
+                                          if (result) {
+                                            final deleteResult = await publisherService.deletePublisher(apiResponse.data![index].id);
+
+                                            var message;
+                                            if (deleteResult != null && deleteResult.data == true) {
+                                               message = 'Editora excluida';
+                                            } else {
+                                              message = deleteResult.errorMessage;
+                                            }
+
+                                            showDialog(
+                                              context: context,
+                                              builder: (_) {
+                                                return AlertDialog(
+                                                title: Text('Sucesso!'),
+                                                content: Text(message),
+                                                actions: [
+                                                  TextButton(
+                                                    child: Text('Ok'),
+                                                    onPressed: () {
+                                                      Navigator.of(context).pop();
+                                                    }) 
+                                                    
+                                                ]
+                                              );})
+                                              .then((data) {
+                                                if (deleteResult.data!) {
+                                                  _fetchPublishers();
+                                                }
+                                              });
+                                          }
+                                          print(result);
+                                          return result;  
+                                      })],
+                                    
+                                
+                                ),
+                              )],
+                              
+                          ),
+                        );
+                        }
+                        ),
+                        )
+              ],
+            )
                   );
         }   
       )            
