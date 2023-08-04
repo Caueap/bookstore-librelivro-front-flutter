@@ -36,7 +36,8 @@ class App extends StatelessWidget {
       ),
       localizationsDelegates: [
         GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate
       ],
       supportedLocales: [const Locale('pt', 'BR')],
       
@@ -44,3 +45,4 @@ class App extends StatelessWidget {
     );
   }
 }
+

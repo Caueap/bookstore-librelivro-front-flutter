@@ -9,7 +9,7 @@ import 'package:intl/intl.dart';
 
 import '../../components/book_api_response.dart';
 import '../../components/publisher_api_response.dart';
-import '../../components/user_api_response.dart';
+import '../../components/client_api_response.dart';
 import '../../models/book_model/book.dart';
 import '../../models/client_model/client.dart';
 import '../../models/rental_model/rental.dart';

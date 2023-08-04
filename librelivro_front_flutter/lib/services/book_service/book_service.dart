@@ -8,6 +8,7 @@ class BookService {
 
   static const Api = 'http://192.168.1.5:8080/api2';
   final url = Uri.parse('$Api/book');
+  final mostRentedBooksUrl = Uri.parse('$Api/book/mostRented');
   
 
   static const headers = {
@@ -97,6 +98,30 @@ class BookService {
     });
     
       }
+
+      Future<BookApiResponse<List<Book>>> getMostRentedBooks()  {
+    return http.get(mostRentedBooksUrl).then((data) {
+      
+      
+      if (data.statusCode == 200) {
+        
+        final jsonData = jsonDecode(utf8.decode(data.body.codeUnits));
+        final books = <Book>[]; 
+        for (var item in jsonData) {
+            books.add(Book.fromJson(item));
+        }
+
+        return BookApiResponse<List<Book>>(data: books);
+      }
+      return BookApiResponse<List<Book>>(error: true, errorMessage: 'An error occured');
+    });
+    // .catchError((_) => ApiResponse<List<Publisher>>(error: true, errorMessage: 'An error occured2'));
+    
+  }
+
+     
+
+
 
 
 }

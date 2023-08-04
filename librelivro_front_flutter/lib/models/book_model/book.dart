@@ -1,6 +1,6 @@
 import 'package:librelivro_front_flutter/models/publisher_model/publisher.dart';
 
-class Book<T> {
+class Book {
  
   int id;
   String name;

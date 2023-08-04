@@ -8,7 +8,7 @@ import 'package:librelivro_front_flutter/components/publisher_api_response.dart'
 import 'package:librelivro_front_flutter/views/publishers/DeletePublisher.dart';
 import 'package:librelivro_front_flutter/views/publishers/PublisherModify.dart';
 import '../../models/publisher_model/publisher.dart';
-import '../../custom_colors/custom_colors.dart';
+
 import '../../services/publisher_service/publisher_service.dart';
 
 
