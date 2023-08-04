@@ -24,7 +24,7 @@ class BookService {
       
       if (data.statusCode == 200) {
         
-        final jsonData = jsonDecode(data.body);
+        final jsonData = jsonDecode(utf8.decode(data.body.codeUnits));
         final books = <Book>[]; 
         for (var item in jsonData) {
             books.add(Book.fromJson(item));
@@ -45,7 +45,7 @@ class BookService {
     return http.get(urlId).then((data) {
 
       if (data.statusCode == 200) {
-        final jsonData = jsonDecode(data.body);
+        final jsonData = jsonDecode(utf8.decode(data.body.codeUnits));
         
         
         return BookApiResponse<Book>(data: Book.fromJson(jsonData));

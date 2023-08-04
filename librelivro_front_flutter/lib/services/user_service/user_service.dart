@@ -21,7 +21,7 @@ class ClientService {
       
       if (data.statusCode == 200) {
         
-        final jsonData = jsonDecode(data.body);
+        final jsonData = jsonDecode(utf8.decode(data.body.codeUnits));
         final clients = <Client>[]; 
         for (var item in jsonData) {
             clients.add(Client.fromJson(item));
@@ -42,7 +42,7 @@ class ClientService {
     return http.get(urlId).then((data) {
 
       if (data.statusCode == 200) {
-        final jsonData = jsonDecode(data.body);
+        final jsonData = jsonDecode(utf8.decode(data.body.codeUnits));
         
         
         return ClientApiResponse<Client>(data: Client.fromJson(jsonData));

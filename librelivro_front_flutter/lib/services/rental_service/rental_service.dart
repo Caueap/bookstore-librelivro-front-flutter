@@ -21,7 +21,7 @@ class RentalService {
       
       if (data.statusCode == 200) {
         
-        final jsonData = jsonDecode(data.body);
+        final jsonData = jsonDecode(utf8.decode(data.body.codeUnits));
         final rentals = <Rental>[]; 
         for (var item in jsonData) {
             rentals.add(Rental.fromJson(item));
@@ -42,7 +42,7 @@ class RentalService {
     return http.get(urlId).then((data) {
 
       if (data.statusCode == 200) {
-        final jsonData = jsonDecode(data.body);
+        final jsonData = jsonDecode(utf8.decode(data.body.codeUnits));
         
         
         return RentalApiResponse<Rental>(data: Rental.fromJson(jsonData));

@@ -23,7 +23,7 @@ class PublisherService {
       
       if (data.statusCode == 200) {
         
-        final jsonData = jsonDecode(data.body); 
+        final jsonData = jsonDecode(utf8.decode(data.body.codeUnits)); 
         final publishers = <Publisher>[]; 
         for (var item in jsonData) {
             publishers.add(Publisher.fromJson(item));
@@ -44,7 +44,7 @@ class PublisherService {
     return http.get(urlId).then((data) {
 
       if (data.statusCode == 200) {
-        final jsonData = jsonDecode(data.body);
+        final jsonData = jsonDecode(utf8.decode(data.body.codeUnits));
         
         
         return PublisherApiResponse<Publisher>(data: Publisher.fromJson(jsonData));
