@@ -2,7 +2,7 @@
 import 'dart:convert';
 
 import 'package:librelivro_front_flutter/models/publisher_model/publisher.dart';
-import 'package:librelivro_front_flutter/components/publisher_api_response.dart';
+import 'package:librelivro_front_flutter/components/api_responses/publisher_api_response.dart';
 import 'package:http/http.dart' as http;
 
 class PublisherService {

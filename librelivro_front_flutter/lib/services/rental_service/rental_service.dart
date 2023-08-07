@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:librelivro_front_flutter/components/rental_api_response.dart';
+import 'package:librelivro_front_flutter/components/api_responses/rental_api_response.dart';
 import '../../models/rental_model/rental.dart';
 import 'package:http/http.dart' as http;
 

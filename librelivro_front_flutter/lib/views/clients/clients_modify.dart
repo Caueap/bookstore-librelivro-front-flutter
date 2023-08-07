@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
-import 'package:librelivro_front_flutter/services/user_service/user_service.dart';
 import '../../models/client_model/client.dart';
+import '../../services/client_service/client_service.dart';
 
 class ClientModify extends StatefulWidget {
   int? id;
+  
 
   ClientModify({this.id});
 
@@ -40,7 +41,7 @@ class _ClientModifyState extends State<ClientModify> {
       isLoading = true;
     });
 
-    userService.getUserById(widget.id ?? 0).then((response) {
+    userService.getClientById(widget.id ?? 0).then((response) {
       setState(() {
         isLoading = false;
       });
@@ -119,7 +120,7 @@ class _ClientModifyState extends State<ClientModify> {
                                 );
 
                                 final clientService = ClientService();
-                                final result = await clientService.updateUser(
+                                final result = await clientService.updateClient(
                                     widget.id!, client);
 
                                 setState(() {
@@ -168,7 +169,7 @@ class _ClientModifyState extends State<ClientModify> {
 
                                 final clientService = ClientService();
                                 final result =
-                                    await clientService.createUser(client);
+                                    await clientService.createClient(client);
 
                                 setState(() {
                                   isLoading = false;

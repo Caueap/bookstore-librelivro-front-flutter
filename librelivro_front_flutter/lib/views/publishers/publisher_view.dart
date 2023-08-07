@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:librelivro_front_flutter/components/navigation_drawer.dart';
-import 'package:librelivro_front_flutter/components/publisher_api_response.dart';
+import 'package:librelivro_front_flutter/components/api_responses/publisher_api_response.dart';
 
 import 'package:librelivro_front_flutter/views/publishers/DeletePublisher.dart';
 import 'package:librelivro_front_flutter/views/publishers/PublisherModify.dart';

@@ -6,7 +6,7 @@ import 'package:intl/intl.dart';
 import 'package:librelivro_front_flutter/views/rentals/rentals_delete.dart';
 import 'package:librelivro_front_flutter/views/rentals/rentals_create.dart';
 import '../../components/navigation_drawer.dart';
-import '../../components/rental_api_response.dart';
+import '../../components/api_responses/rental_api_response.dart';
 import '../../models/book_model/book.dart';
 import '../../models/rental_model/rental.dart';
 import '../../services/rental_service/rental_service.dart';

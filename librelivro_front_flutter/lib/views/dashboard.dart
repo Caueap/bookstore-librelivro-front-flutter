@@ -3,11 +3,11 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:librelivro_front_flutter/custom_colors/custom_colors.dart';
-import '../components/book_api_response.dart';
-import '../components/client_api_response.dart';
+import '../components/api_responses/book_api_response.dart';
+import '../components/api_responses/client_api_response.dart';
 import '../components/navigation_drawer.dart';
-import '../components/publisher_api_response.dart';
-import '../components/rental_api_response.dart';
+import '../components/api_responses/publisher_api_response.dart';
+import '../components/api_responses/rental_api_response.dart';
 import '../models/book_model/book.dart';
 import '../models/client_model/client.dart';
 import '../models/publisher_model/publisher.dart';
@@ -15,7 +15,8 @@ import '../models/rental_model/rental.dart';
 import '../services/book_service/book_service.dart';
 import '../services/publisher_service/publisher_service.dart';
 import '../services/rental_service/rental_service.dart';
-import '../services/user_service/user_service.dart';
+import '../services/client_service/client_service.dart';
+
 
 class Dashboard extends StatefulWidget {
 

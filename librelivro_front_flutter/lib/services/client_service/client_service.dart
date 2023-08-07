@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import '../../components/client_api_response.dart';
+import '../../components/api_responses/client_api_response.dart';
 import '../../models/client_model/client.dart';
 
 
@@ -35,7 +35,7 @@ class ClientService {
     
   }
 
-  Future<ClientApiResponse<Client>> getUserById(int id)  {
+  Future<ClientApiResponse<Client>> getClientById(int id)  {
     
     var urlId = Uri.parse('$url/$id');
 
@@ -52,7 +52,7 @@ class ClientService {
     
   }
 
-  Future<ClientApiResponse<bool>> createUser(Client client)  {
+  Future<ClientApiResponse<bool>> createClient(Client client)  {
     return http.post(url, headers: headers, body: json.encode(client.toJson())).
     then((data) {
 
@@ -65,7 +65,7 @@ class ClientService {
       }
     
 
-  Future<ClientApiResponse<bool>> updateUser(int id, Client client) {
+  Future<ClientApiResponse<bool>> updateClient(int id, Client client) {
     var urlId = Uri.parse('$url/$id');
 
     return http.put(urlId, headers: headers, body: json.encode(client.toJson()))
@@ -80,7 +80,7 @@ class ClientService {
     
       }
 
-      Future<ClientApiResponse<bool>> deleteUser(int id) {
+      Future<ClientApiResponse<bool>> deleteClient(int id) {
     var urlId = Uri.parse('$url/$id');
 
     return http.delete(urlId, headers: headers)
