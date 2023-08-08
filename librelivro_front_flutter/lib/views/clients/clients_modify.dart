@@ -4,8 +4,7 @@ import '../../models/client_model/client.dart';
 import '../../services/client_service/client_service.dart';
 
 class ClientModify extends StatefulWidget {
-  int? id;
-  
+  final int? id;
 
   ClientModify({this.id});
 
@@ -14,8 +13,7 @@ class ClientModify extends StatefulWidget {
 }
 
 class _ClientModifyState extends State<ClientModify> {
-  // BookService get bookService => GetIt.instance<BookService>();
-  // PublisherService get publisherService => GetIt.instance<PublisherService>();
+
   ClientService get userService => GetIt.instance<ClientService>();
 
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
@@ -100,104 +98,11 @@ class _ClientModifyState extends State<ClientModify> {
                         width: double.infinity,
                         height: 35,
                         child: ElevatedButton(
-                          onPressed: () async {
+                          onPressed: () {
                             if (isEditing) {
-                              if (formKey.currentState!.validate()) {
-                                setState(() {
-                                  isLoading = true;
-                                });
-
-                                // final releaseDate = DateTime.parse(releaseDateController.text);
-                                // final formattedReleaseDate = DateFormat('yyyy-MM-dd').format(releaseDate);
-
-                                final client = Client(
-                                  //Obs: estava dando erro 400 bad request. Tive que adicionar o controller nos
-                                  //TextField acima. Senão, o nome e a cidade seriam passados nulos.
-                                  name: nameController.text,
-                                  email: emailController.text,
-                                  city: cityController.text,
-                                  address: addressController.text,
-                                );
-
-                                final clientService = ClientService();
-                                final result = await clientService.updateClient(
-                                    widget.id!, client);
-
-                                setState(() {
-                                  isLoading = false;
-                                });
-
-                                final text = result.error
-                                    ? (result.errorMessage ?? 'Erro no modify')
-                                    : 'Usuário Atualizado!';
-
-                                showDialog(
-                                    context: context,
-                                    builder: (_) {
-                                      return AlertDialog(
-                                          title: Text('Success'),
-                                          content: Text(text),
-                                          actions: [
-                                            TextButton(
-                                                child: Text('Ok'),
-                                                onPressed: () {
-                                                  Navigator.of(context).pop();
-                                                })
-                                          ]);
-                                    }).then((data) {
-                                  if (result.data!) {
-                                    Navigator.of(context).pop();
-                                  }
-                                });
-                              }
+                              updateClient(context);
                             } else {
-                              if (formKey.currentState!.validate()) {
-                                setState(() {
-                                  isLoading = true;
-                                });
-
-                                // final releaseDate = DateTime.parse(releaseDateController.text);
-                                // final formattedReleaseDate = DateFormat('yyyy-MM-dd').format(releaseDate);
-
-                                final client = Client(
-                                    //Obs: estava dando erro 400 bad request. Tive que adicionar o controller nos
-                                    //TextField acima. Senão, o nome e a cidade seriam passados nulos.
-                                    name: nameController.text,
-                                    email: emailController.text,
-                                    city: cityController.text,
-                                    address: addressController.text);
-
-                                final clientService = ClientService();
-                                final result =
-                                    await clientService.createClient(client);
-
-                                setState(() {
-                                  isLoading = false;
-                                });
-
-                                final text = result.error
-                                    ? (result.errorMessage ?? 'Erro no modify')
-                                    : 'Usuário Cadastrado!';
-
-                                showDialog(
-                                    context: context,
-                                    builder: (_) {
-                                      return AlertDialog(
-                                          title: Text('Success'),
-                                          content: Text(text),
-                                          actions: [
-                                            TextButton(
-                                                child: Text('Ok'),
-                                                onPressed: () {
-                                                  Navigator.of(context).pop();
-                                                })
-                                          ]);
-                                    }).then((data) {
-                                  if (result.data!) {
-                                    Navigator.of(context).pop();
-                                  }
-                                });
-                              }
+                              createClient(context);
                             }
                           },
                           style: ButtonStyle(
@@ -258,5 +163,94 @@ class _ClientModifyState extends State<ClientModify> {
       return 'Máximo de 50 caracteres';
     }
     return null;
+  }
+
+  void createClient(BuildContext context) async {
+    if (formKey.currentState!.validate()) {
+      setState(() {
+        isLoading = true;
+      });
+
+      final client = Client(
+          name: nameController.text,
+          email: emailController.text,
+          city: cityController.text,
+          address: addressController.text);
+
+      final clientService = ClientService();
+      final result = await clientService.createClient(client);
+
+      setState(() {
+        isLoading = false;
+      });
+
+      final text = result.error
+          ? (result.errorMessage)
+          : 'Usuário Cadastrado!';
+
+      showDialog(
+          context: context,
+          builder: (_) {
+            return AlertDialog(
+                title: Text('Success'),
+                content: Text(text),
+                actions: [
+                  TextButton(
+                      child: Text('Ok'),
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      })
+                ]);
+          }).then((data) {
+        if (result.data!) {
+          Navigator.of(context).pop();
+        }
+      });
+    }
+  }
+
+  void updateClient(BuildContext context) async {
+    if (formKey.currentState!.validate()) {
+      setState(() {
+        isLoading = true;
+      });
+
+      final client = Client(
+        name: nameController.text,
+        email: emailController.text,
+        city: cityController.text,
+        address: addressController.text,
+      );
+
+      final clientService = ClientService();
+      final result = await clientService.updateClient(widget.id!, client);
+
+      setState(() {
+        isLoading = false;
+      });
+
+      final text = result.error
+          ? (result.errorMessage)
+          : 'Usuário Atualizado!';
+
+      showDialog(
+          context: context,
+          builder: (_) {
+            return AlertDialog(
+                title: Text('Success'),
+                content: Text(text),
+                actions: [
+                  TextButton(
+                      child: Text('Ok'),
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      })
+                ]);
+          }).then((data) {
+        if (result.data!) {
+          Navigator.of(context).pop();
+        }
+      });
+    }
   }
 }

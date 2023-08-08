@@ -10,7 +10,7 @@ class ClientListCard extends StatelessWidget {
   ClientService get clientService => GetIt.instance<ClientService>();
 
   final Client client;
-  VoidCallback? reFecth;
+  final VoidCallback? reFecth;
 
   ClientListCard({required this.client, this.reFecth});
 
@@ -76,7 +76,7 @@ class ClientListCard extends StatelessWidget {
       final deleteResult = await clientService.deleteClient(client.id);
 
       var message;
-      if (deleteResult != null && deleteResult.data == true) {
+      if (deleteResult.data == true) {
         message = 'Usuário excluido';
       } else {
         message = deleteResult.errorMessage;
