@@ -79,7 +79,7 @@ class _PublisherModifyState extends State<PublisherModify> {
                           width: double.infinity,
                           height: 35,
                           child: ElevatedButton(
-                            onPressed: () async {
+                            onPressed: () {
                               if (isEditing) {
                                 updatePublisher(context);
                               } else {

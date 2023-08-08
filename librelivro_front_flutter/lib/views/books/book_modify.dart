@@ -1,20 +1,14 @@
-import 'dart:ffi';
-
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
-import 'package:librelivro_front_flutter/main.dart';
 import '../../models/book_model/book.dart';
-import 'package:librelivro_front_flutter/models/book_model/book.dart';
-
 import 'package:librelivro_front_flutter/services/publisher_service/publisher_service.dart';
 import '../../components/api_responses/publisher_api_response.dart';
 import '../../models/publisher_model/publisher.dart';
 import 'package:intl/intl.dart';
-
 import '../../services/book_service/book_service.dart';
 
 class BookModify extends StatefulWidget {
-  int? id;
+  final int? id;
 
   BookModify({this.id});
 
@@ -170,105 +164,11 @@ class _BookModifyState extends State<BookModify> {
                         width: double.infinity,
                         height: 35,
                         child: ElevatedButton(
-                          onPressed: () async {
+                          onPressed: () {
                             if (isEditing) {
-                              if (formKey.currentState!.validate()) {
-                                setState(() {
-                                  isLoading = true;
-                                });
-
-                                // final releaseDate = DateTime.parse(releaseDateController.text);
-                                // final formattedReleaseDate = DateFormat('yyyy-MM-dd').format(releaseDate);
-
-                                final book = Book(
-                                    //Obs: estava dando erro 400 bad request. Tive que adicionar o controller nos
-                                    //TextField acima. Senão, o nome e a cidade seriam passados nulos.
-                                    name: nameController.text,
-                                    author: authorController.text,
-                                    releaseDateTo: releaseDateController.text,
-                                    amount: int.parse(amountController.text),
-                                    publisherModelId: selectedPublisher!.id);
-
-                                final bookService = BookService();
-                                final result = await bookService.updateBook(
-                                    widget.id!, book);
-
-                                setState(() {
-                                  isLoading = false;
-                                });
-
-                                final text = result.error
-                                    ? (result.errorMessage ?? 'Erro no modify')
-                                    : 'Livro Atualizado!';
-
-                                showDialog(
-                                    context: context,
-                                    builder: (_) {
-                                      return AlertDialog(
-                                          title: Text('Success'),
-                                          content: Text(text),
-                                          actions: [
-                                            TextButton(
-                                                child: Text('Ok'),
-                                                onPressed: () {
-                                                  Navigator.of(context).pop();
-                                                })
-                                          ]);
-                                    }).then((data) {
-                                  if (result.data!) {
-                                    Navigator.of(context).pop();
-                                  }
-                                });
-                              }
+                              updateBook(context);
                             } else {
-                              if (formKey.currentState!.validate()) {
-                                setState(() {
-                                  isLoading = true;
-                                });
-
-                                // final releaseDate = DateTime.parse(releaseDateController.text);
-                                // final formattedReleaseDate = DateFormat('yyyy-MM-dd').format(releaseDate);
-
-                                final book = Book(
-                                    //Obs: estava dando erro 400 bad request. Tive que adicionar o controller nos
-                                    //TextField acima. Senão, o nome e a cidade seriam passados nulos.
-                                    name: nameController.text,
-                                    author: authorController.text,
-                                    releaseDateTo: releaseDateController.text,
-                                    amount: int.parse(amountController.text),
-                                    publisherModelId: selectedPublisher!.id);
-
-                                final bookService = BookService();
-                                final result =
-                                    await bookService.createBook(book);
-
-                                setState(() {
-                                  isLoading = false;
-                                });
-
-                                final text = result.error
-                                    ? (result.errorMessage ?? 'Erro no modify')
-                                    : 'Livro Cadastrado!';
-
-                                showDialog(
-                                    context: context,
-                                    builder: (_) {
-                                      return AlertDialog(
-                                          title: Text('Success'),
-                                          content: Text(text),
-                                          actions: [
-                                            TextButton(
-                                                child: Text('Ok'),
-                                                onPressed: () {
-                                                  Navigator.of(context).pop();
-                                                })
-                                          ]);
-                                    }).then((data) {
-                                  if (result.data!) {
-                                    Navigator.of(context).pop();
-                                  }
-                                });
-                              }
+                              createBook(context);
                             }
                           },
                           style: ButtonStyle(
@@ -337,5 +237,91 @@ class _BookModifyState extends State<BookModify> {
       return 'Selecione uma editora';
     }
     return null;
+  }
+
+  void createBook(BuildContext context) async {
+    if (formKey.currentState!.validate()) {
+      setState(() {
+        isLoading = true;
+      });
+
+      final book = Book(
+          name: nameController.text,
+          author: authorController.text,
+          releaseDateTo: releaseDateController.text,
+          amount: int.parse(amountController.text),
+          publisherModelId: selectedPublisher!.id);
+
+      final bookService = BookService();
+      final result = await bookService.createBook(book);
+
+      setState(() {
+        isLoading = false;
+      });
+
+      final text = result.error ? (result.errorMessage) : 'Livro Cadastrado!';
+
+      showDialog(
+          context: context,
+          builder: (_) {
+            return AlertDialog(
+                title: Text('Success'),
+                content: Text(text),
+                actions: [
+                  TextButton(
+                      child: Text('Ok'),
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      })
+                ]);
+          }).then((data) {
+        if (result.data!) {
+          Navigator.of(context).pop();
+        }
+      });
+    }
+  }
+
+  void updateBook(BuildContext context) async {
+    if (formKey.currentState!.validate()) {
+      setState(() {
+        isLoading = true;
+      });
+
+      final book = Book(
+          name: nameController.text,
+          author: authorController.text,
+          releaseDateTo: releaseDateController.text,
+          amount: int.parse(amountController.text),
+          publisherModelId: selectedPublisher!.id);
+
+      final bookService = BookService();
+      final result = await bookService.updateBook(widget.id!, book);
+
+      setState(() {
+        isLoading = false;
+      });
+
+      final text = result.error ? (result.errorMessage) : 'Livro Atualizado!';
+
+      showDialog(
+          context: context,
+          builder: (_) {
+            return AlertDialog(
+                title: Text('Success'),
+                content: Text(text),
+                actions: [
+                  TextButton(
+                      child: Text('Ok'),
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      })
+                ]);
+          }).then((data) {
+        if (result.data!) {
+          Navigator.of(context).pop();
+        }
+      });
+    }
   }
 }

@@ -3,10 +3,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:librelivro_front_flutter/models/book_model/book.dart';
-
 import 'package:librelivro_front_flutter/views/books/book_modify.dart';
-import 'package:librelivro_front_flutter/views/books/books_delete.dart';
-
+import 'package:librelivro_front_flutter/views/books/books_list_card.dart';
 import '../../components/api_responses/book_api_response.dart';
 import '../../components/navigation_drawer.dart';
 import '../../services/book_service/book_service.dart';
@@ -127,112 +125,8 @@ class _BooksViewState extends State<BooksView> {
                   child: ListView.builder(
                       itemCount: filteredBooks!.length,
                       itemBuilder: (_, index) {
-                        return Card(
-                          child: ExpansionTile(
-                            title: Text(filteredBooks![index].name,
-                                style: TextStyle(
-                                    color: Theme.of(context).primaryColor,
-                                    fontSize: 20)),
-                            children: [
-                              Align(
-                                alignment: Alignment.centerLeft,
-                                child: Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: DefaultTextStyle(
-                                      style: TextStyle(
-                                        fontSize: 18,
-                                        color: Theme.of(context).primaryColor,
-                                      ),
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                              'Autor: ${filteredBooks![index].author}'),
-                                          Text(
-                                              'Data de lançamento: ${filteredBooks![index].releaseDateFrom}'),
-                                          Text(
-                                              'Quantidade em estoque: ${filteredBooks![index].amount}'),
-                                          Text(
-                                              'Quantidade Alugada: ${filteredBooks![index].rentedAmount}'),
-                                          Text(
-                                              'Editora: ${filteredBooks![index].publisherModel!.name}'),
-                                        ],
-                                      ),
-                                    )),
-                              ),
-                              Align(
-                                alignment: Alignment.centerRight,
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                  children: [
-                                    IconButton(
-                                      icon: Icon(Icons.edit,
-                                          color:
-                                              Theme.of(context).primaryColor),
-                                      onPressed: () {
-                                        Navigator.of(context)
-                                            .push(MaterialPageRoute(
-                                                builder: (_) => BookModify(
-                                                    id: bookApiResponse
-                                                        .data?[index].id)))
-                                            .then((data) => {_fetchBooks()});
-                                      },
-                                    ),
-                                    IconButton(
-                                        icon: Icon(Icons.delete,
-                                            color: Colors.red),
-                                        onPressed: () async {
-                                          final result = await showDialog(
-                                              context: context,
-                                              builder: (_) => BookDelete());
-
-                                          if (result) {
-                                            final deleteResult =
-                                                await bookService.deleteBook(
-                                                    bookApiResponse
-                                                        .data![index].id);
-                                            var mainMessage = 'Sucesso!';
-                                            var message;
-                                            if (deleteResult != null &&
-                                                deleteResult.data == true) {
-                                              message = 'Livro excluido';
-                                            } else {
-                                              message =
-                                                  deleteResult.errorMessage;
-                                              mainMessage = 'Ops...';
-                                            }
-
-                                            showDialog(
-                                                context: context,
-                                                builder: (_) {
-                                                  return AlertDialog(
-                                                      title: Text(mainMessage),
-                                                      content: Text(message),
-                                                      actions: [
-                                                        TextButton(
-                                                            child: Text('Ok'),
-                                                            onPressed: () {
-                                                              Navigator.of(
-                                                                      context)
-                                                                  .pop();
-                                                            })
-                                                      ]);
-                                                }).then((data) {
-                                              if (deleteResult.data!) {
-                                                _fetchBooks();
-                                              }
-                                            });
-                                          }
-                                          print(result);
-                                          return result;
-                                        })
-                                  ],
-                                ),
-                              )
-                            ],
-                          ),
-                        );
+                        return BookListCard(
+                            book: filteredBooks![index], reFetch: _fetchBooks);
                       }))
             ]));
       }),
