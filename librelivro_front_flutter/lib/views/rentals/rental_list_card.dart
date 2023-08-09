@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:librelivro_front_flutter/views/rentals/rentals_delete.dart';
-
 import '../../models/rental_model/rental.dart';
 import '../../services/rental_service/rental_service.dart';
 
@@ -11,13 +10,13 @@ class RentalListCard extends StatelessWidget {
   final Rental rental;
   final VoidCallback? reFetch;
   final String rentalStatus;
-  final dynamic handleRentalId;
+  final VoidCallback? handle;
 
   RentalListCard(
       {required this.rental,
       required this.reFetch,
       required this.rentalStatus,
-      required this.handleRentalId});
+      required this.handle});
 
   @override
   Widget build(BuildContext context) {
@@ -40,7 +39,8 @@ class RentalListCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text('Data do aluguel: ${rental.rentalDate}'),
-                      Text('Data esperada de devolução: ${rental.expectedDeliveryDate}'),
+                      Text(
+                          'Data esperada de devolução: ${rental.expectedDeliveryDate}'),
                       Text('Data de devolução: ${rental.deliveryDate}'),
                       Text('Status: ${rental.status}'),
                       Text('Usuário: ${rental.clientModel!.name}'),
@@ -61,8 +61,8 @@ class RentalListCard extends StatelessWidget {
                   onPressed: rentalStatus != 'Pendente'
                       ? null
                       : () {
-                          int rentalId = rental.id;
-                          handleRentalId(rentalId);
+                          
+                          handle!();
                         },
                 ),
                 IconButton(

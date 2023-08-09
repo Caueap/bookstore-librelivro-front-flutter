@@ -22,7 +22,6 @@ class RentalsView extends StatefulWidget {
 }
 
 class _RentalsViewState extends State<RentalsView> {
-  
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
   RentalService get rentalService => GetIt.instance<RentalService>();
@@ -50,6 +49,7 @@ class _RentalsViewState extends State<RentalsView> {
   }
 
   _fetchRentals() async {
+    print('chamando o fetch');
     setState(() {
       isLoading = true;
     });
@@ -147,13 +147,15 @@ class _RentalsViewState extends State<RentalsView> {
                               rental: filteredRentals![index],
                               reFetch: _fetchRentals,
                               rentalStatus: rentalStatus,
-                              handleRentalId: handleRentalId(filteredRentals![index].id));
+                              handle:
+                                  handleRentalIdClosure(filteredRentals![index].id));
                         }))
               ]));
         }));
   }
 
-  handleRentalId(int rentalId) async {
+  VoidCallback handleRentalIdClosure(int rentalId) {
+  return () async {
     setState(() {
       isLoading = true;
     });
@@ -204,5 +206,60 @@ class _RentalsViewState extends State<RentalsView> {
         _fetchRentals();
       }
     });
-  }
+  };
+}
+
+  // handleRentalId(int rentalId) async {
+  //   print('chamando');
+  //   setState(() {
+  //     isLoading = true;
+  //   });
+
+  //   final rentalService = RentalService();
+  //   final response = await rentalService.getRentalById(rentalId);
+
+  //   setState(() {
+  //     isLoading = false;
+  //   });
+
+  //   if (response.error) {
+  //     errorMessage = response.errorMessage;
+  //   }
+
+  //   Rental retrievedRental = response.data!;
+
+  //   final rental = Rental(
+  //       rentalDate: retrievedRental.rentalDate,
+  //       expectedDeliveryDate: retrievedRental.expectedDeliveryDate,
+  //       deliveryDate: DateFormat('dd/MM/yyyy').format(DateTime.now()),
+  //       bookModelId: retrievedRental.bookModel!.id,
+  //       clientModelId: retrievedRental.clientModel!.id);
+
+  //   final result = await rentalService.updateRental(rentalId, rental);
+
+  //   setState(() {
+  //     isLoading = false;
+  //   });
+
+  //   final text = result.error ? (result.errorMessage) : 'Livro entregue!';
+
+  //   showDialog(
+  //       context: context,
+  //       builder: (_) {
+  //         return AlertDialog(
+  //             title: Text('Success'),
+  //             content: Text(text),
+  //             actions: [
+  //               TextButton(
+  //                   child: Text('Ok'),
+  //                   onPressed: () {
+  //                     Navigator.of(context).pop();
+  //                   })
+  //             ]);
+  //       }).then((data) {
+  //     if (result.data!) {
+  //       _fetchRentals();
+  //     }
+  //   });
+  // }
 }
