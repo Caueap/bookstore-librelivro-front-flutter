@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:intl/intl.dart';
+import 'package:librelivro_front_flutter/components/utilities/validations/validations.dart';
 import '../../components/api_responses/book_api_response.dart';
 import '../../components/api_responses/client_api_response.dart';
 import '../../models/book_model/book.dart';
@@ -23,8 +24,8 @@ class _RentalCreateState extends State<RentalCreate> {
   RentalService get rentalService => GetIt.instance<RentalService>();
   BookService get bookService => GetIt.instance<BookService>();
   ClientService get clientService => GetIt.instance<ClientService>();
-
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
+  final Validations validations = Validations();
 
   final TextEditingController rentalDateController = TextEditingController();
   final TextEditingController expectedDeliveryDateController =
@@ -129,7 +130,7 @@ class _RentalCreateState extends State<RentalCreate> {
                             });
                           }
                         },
-                        validator: validateRentalDate,
+                        validator: validations.validateFieldNotEmpty,
                       ),
                       Container(height: 8),
                       TextFormField(
@@ -150,7 +151,7 @@ class _RentalCreateState extends State<RentalCreate> {
                             });
                           }
                         },
-                        validator: validateExpectedDeliveryDate,
+                        validator: validations.validateFieldNotEmpty,
                       ),
                       DropdownButtonFormField<Book>(
                         value: selectedBook,
@@ -167,7 +168,7 @@ class _RentalCreateState extends State<RentalCreate> {
                             selectedBook = newBook;
                           });
                         },
-                        validator: validateBook,
+                        validator: validations.validateBook,
                       ),
                       Container(height: 8),
                       DropdownButtonFormField<Client>(
@@ -185,7 +186,7 @@ class _RentalCreateState extends State<RentalCreate> {
                             selectedClient = newClient;
                           });
                         },
-                        validator: validateClient,
+                        validator: validations.validateClient,
                       ),
                       Container(height: 8),
                       SizedBox(
@@ -210,33 +211,7 @@ class _RentalCreateState extends State<RentalCreate> {
         ));
   }
 
-  String? validateRentalDate(String? value) {
-    if (value == null || value.isEmpty) {
-      return 'Este campo é obrigatório';
-    }
-    return null;
-  }
-
-  String? validateExpectedDeliveryDate(String? value) {
-    if (value == null || value.isEmpty) {
-      return 'Este campo é obrigatório';
-    }
-    return null;
-  }
-
-  String? validateBook(Book? value) {
-    if (value == null) {
-      return 'Selecione um livro';
-    }
-    return null;
-  }
-
-  String? validateClient(Client? value) {
-    if (value == null) {
-      return 'Selecione um usuário';
-    }
-    return null;
-  }
+  
 
   void createRental(BuildContext context) async {
     if (formKey.currentState!.validate()) {

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import '../../components/utilities/validations/validations.dart';
 import '../../models/client_model/client.dart';
 import '../../services/client_service/client_service.dart';
 
@@ -13,10 +14,9 @@ class ClientModify extends StatefulWidget {
 }
 
 class _ClientModifyState extends State<ClientModify> {
-
   ClientService get userService => GetIt.instance<ClientService>();
-
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
+  final Validations validations = Validations();
 
   final TextEditingController nameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
@@ -47,11 +47,13 @@ class _ClientModifyState extends State<ClientModify> {
       if (response.error) {
         errorMessage = response.errorMessage;
       }
-      client = response.data!;
-      nameController.text = client!.name;
-      emailController.text = client!.email;
-      cityController.text = client!.city;
-      addressController.text = client!.address;
+      client = response.data;
+      if (client != null) {
+        nameController.text = client!.name;
+        emailController.text = client!.email;
+        cityController.text = client!.city;
+        addressController.text = client!.address;
+      }
     });
   }
 
@@ -72,25 +74,25 @@ class _ClientModifyState extends State<ClientModify> {
                         controller: nameController,
                         decoration:
                             InputDecoration(hintText: 'Nome do usuário'),
-                        validator: validateUserName,
+                        validator: validateForNameAndCityAndAddressFields,
                       ),
                       Container(height: 8),
                       TextFormField(
                         controller: emailController,
                         decoration: InputDecoration(hintText: 'Email'),
-                        validator: validateEmail,
+                        validator: validations.validateEmail,
                       ),
                       Container(height: 8),
                       TextFormField(
                         controller: cityController,
                         decoration: InputDecoration(hintText: 'Cidade'),
-                        validator: validateCity,
+                        validator: validateForNameAndCityAndAddressFields,
                       ),
                       Container(height: 8),
                       TextFormField(
                         controller: addressController,
                         decoration: InputDecoration(hintText: 'Endereço'),
-                        validator: validateAddress,
+                        validator: validateForNameAndCityAndAddressFields,
                       ),
                       Container(height: 8),
                       Container(height: 8),
@@ -120,47 +122,17 @@ class _ClientModifyState extends State<ClientModify> {
         ));
   }
 
-  String? validateUserName(String? value) {
-    if (value == null || value.isEmpty) {
-      return 'Este campo é obrigatório';
-    } else if (value.length < 3) {
-      return 'Mínimo de 3 caracteres';
-    } else if (value.length > 50) {
-      return 'Máximo de 50 caracteres';
-    }
-    return null;
-  }
+  String? validateForNameAndCityAndAddressFields(String? value) {
+    final validations = Validations();
 
-  String? validateEmail(String? value) {
-    final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
-
-    if (value == null || value.isEmpty) {
-      return 'Este campo é obrigatório';
-    } else if (!emailRegex.hasMatch(value)) {
-      return 'Por favor, informe um formato de Email válido';
+    final notEmpty = validations.validateFieldNotEmpty(value);
+    if (notEmpty != null) {
+      return notEmpty;
     }
 
-    return null;
-  }
-
-  String? validateCity(String? value) {
-    if (value == null || value.isEmpty) {
-      return 'Este campo é obrigatório';
-    } else if (value.length < 3) {
-      return 'Mínimo de 3 caracteres';
-    } else if (value.length > 50) {
-      return 'Máximo de 50 caracteres';
-    }
-    return null;
-  }
-
-  String? validateAddress(String? value) {
-    if (value == null || value.isEmpty) {
-      return 'Este campo é obrigatório';
-    } else if (value.length < 3) {
-      return 'Mínimo de 3 caracteres';
-    } else if (value.length > 50) {
-      return 'Máximo de 50 caracteres';
+    final validName = validations.validateEntityName(value);
+    if (validName != null) {
+      return validName;
     }
     return null;
   }
@@ -184,9 +156,7 @@ class _ClientModifyState extends State<ClientModify> {
         isLoading = false;
       });
 
-      final text = result.error
-          ? (result.errorMessage)
-          : 'Usuário Cadastrado!';
+      final text = result.error ? (result.errorMessage) : 'Usuário Cadastrado!';
 
       showDialog(
           context: context,
@@ -229,9 +199,7 @@ class _ClientModifyState extends State<ClientModify> {
         isLoading = false;
       });
 
-      final text = result.error
-          ? (result.errorMessage)
-          : 'Usuário Atualizado!';
+      final text = result.error ? (result.errorMessage) : 'Usuário Atualizado!';
 
       showDialog(
           context: context,

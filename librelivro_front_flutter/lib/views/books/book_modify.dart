@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:librelivro_front_flutter/components/utilities/validations/validations.dart';
 import '../../models/book_model/book.dart';
 import 'package:librelivro_front_flutter/services/publisher_service/publisher_service.dart';
 import '../../components/api_responses/publisher_api_response.dart';
@@ -19,6 +20,7 @@ class BookModify extends StatefulWidget {
 class _BookModifyState extends State<BookModify> {
   BookService get bookService => GetIt.instance<BookService>();
   PublisherService get publisherService => GetIt.instance<PublisherService>();
+  final Validations validations = Validations();
 
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
@@ -81,12 +83,14 @@ class _BookModifyState extends State<BookModify> {
       if (response.error) {
         errorMessage = response.errorMessage;
       }
-      book = response.data!;
-      nameController.text = book!.name;
-      authorController.text = book!.author;
-      releaseDateController.text = book!.releaseDateFrom.toString();
-      amountController.text = book!.amount.toString();
-      rentedAmountController.text = book!.rentedAmount.toString();
+      book = response.data;
+      if (book != null) {
+        nameController.text = book!.name;
+        authorController.text = book!.author;
+        releaseDateController.text = book!.releaseDateFrom.toString();
+        amountController.text = book!.amount.toString();
+        rentedAmountController.text = book!.rentedAmount.toString();
+      }
     });
   }
 
@@ -104,15 +108,15 @@ class _BookModifyState extends State<BookModify> {
                   child: Column(
                     children: [
                       TextFormField(
-                        controller: nameController,
-                        decoration: InputDecoration(hintText: 'Nome do livro'),
-                        validator: validateBookName,
-                      ),
+                          controller: nameController,
+                          decoration:
+                              InputDecoration(hintText: 'Nome do livro'),
+                          validator: validateForNameAndAuthorFields),
                       Container(height: 8),
                       TextFormField(
                         controller: authorController,
                         decoration: InputDecoration(hintText: 'Autor'),
-                        validator: validateAuthorName,
+                        validator: validateForNameAndAuthorFields,
                       ),
                       Container(height: 8),
                       TextFormField(
@@ -133,13 +137,13 @@ class _BookModifyState extends State<BookModify> {
                             });
                           }
                         },
-                        validator: validateReleaseDate,
+                        validator: validations.validateFieldNotEmpty,
                       ),
                       Container(height: 8),
                       TextFormField(
                         controller: amountController,
                         decoration: InputDecoration(hintText: 'Quantidade'),
-                        validator: validateAmount,
+                        validator: validateForAmountField,
                       ),
                       Container(height: 8),
                       DropdownButtonFormField<Publisher>(
@@ -157,7 +161,7 @@ class _BookModifyState extends State<BookModify> {
                             selectedPublisher = newPublisher;
                           });
                         },
-                        validator: validatePublisher,
+                        validator: validations.validatePublisher,
                       ),
                       Container(height: 8),
                       SizedBox(
@@ -186,55 +190,32 @@ class _BookModifyState extends State<BookModify> {
         ));
   }
 
-  String? validateBookName(String? value) {
-    if (value == null || value.isEmpty) {
-      return 'Este campo é obrigatório';
-    } else if (value.length < 3) {
-      return 'Mínimo de 3 caracteres';
-    } else if (value.length > 50) {
-      return 'Máximo de 50 caracteres';
+  String? validateForNameAndAuthorFields(String? value) {
+    final validations = Validations();
+
+    final notEmpty = validations.validateFieldNotEmpty(value);
+    if (notEmpty != null) {
+      return notEmpty;
+    }
+
+    final validName = validations.validateEntityName(value);
+    if (validName != null) {
+      return validName;
     }
     return null;
   }
 
-  String? validateAuthorName(String? value) {
-    if (value == null || value.isEmpty) {
-      return 'Este campo é obrigatório';
-    } else if (value.length < 3) {
-      return 'Mínimo de 3 caracteres';
-    } else if (value.length > 50) {
-      return 'Máximo de 50 caracteres';
-    }
-    return null;
-  }
+  String? validateForAmountField(String? value) {
+    final validations = Validations();
 
-  String? validateReleaseDate(String? value) {
-    if (value == null || value.isEmpty) {
-      return 'Este campo é obrigatório';
-    }
-    return null;
-  }
-
-  String? validateAmount(String? value) {
-    if (value == null || value.isEmpty) {
-      return 'Este campo é obrigatório';
+    final notEmpty = validations.validateFieldNotEmpty(value);
+    if (notEmpty != null) {
+      return notEmpty;
     }
 
-    // Check if the value is a valid integer
-    int? intValue = int.tryParse(value);
-    if (intValue == null) {
-      return 'Este campo suporta apenas números';
-    }
-
-    if (intValue < 0) {
-      return 'Por favor, informe um valor acima de 0';
-    }
-    return null;
-  }
-
-  String? validatePublisher(Publisher? value) {
-    if (value == null) {
-      return 'Selecione uma editora';
+    final validAmount = validations.validateAmount(value);
+    if (validAmount != null) {
+      return validAmount;
     }
     return null;
   }

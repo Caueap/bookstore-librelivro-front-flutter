@@ -2,7 +2,7 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
-import 'package:librelivro_front_flutter/custom_colors/custom_colors.dart';
+import 'package:librelivro_front_flutter/components/utilities/custom_colors/custom_colors.dart';
 import '../components/api_responses/book_api_response.dart';
 import '../components/api_responses/client_api_response.dart';
 import '../components/navigation_drawer.dart';

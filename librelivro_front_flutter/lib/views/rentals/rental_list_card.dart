@@ -12,8 +12,8 @@ class RentalListCard extends StatelessWidget {
   final String rentalStatus;
   final VoidCallback? handle;
 
-  RentalListCard(
-      {required this.rental,
+  RentalListCard({
+      required this.rental,
       required this.reFetch,
       required this.rentalStatus,
       required this.handle});

@@ -1,6 +1,6 @@
 
 import 'package:flutter/material.dart';
-import 'package:librelivro_front_flutter/custom_colors/custom_colors.dart';
+import 'package:librelivro_front_flutter/components/utilities/custom_colors/custom_colors.dart';
 import 'package:librelivro_front_flutter/views/books/books_view.dart';
 import 'package:librelivro_front_flutter/views/dashboard.dart';
 import 'package:librelivro_front_flutter/views/publishers/publisher_view.dart';
