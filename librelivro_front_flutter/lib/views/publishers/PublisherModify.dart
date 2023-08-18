@@ -137,24 +137,26 @@ class _PublisherModifyState extends State<PublisherModify> {
 
       final text = result.error ? (result.errorMessage) : 'Editora Cadastrada!';
 
-      showDialog(
-          context: context,
-          builder: (_) {
-            return AlertDialog(
-                title: Text('Success'),
-                content: Text(text),
-                actions: [
-                  TextButton(
-                      child: Text('Ok'),
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                      })
-                ]);
-          }).then((data) {
-        if (result.data!) {
-          Navigator.of(context).pop();
-        }
-      });
+      if (context.mounted) {
+        showDialog(
+            context: context,
+            builder: (_) {
+              return AlertDialog(
+                  title: Text('Success'),
+                  content: Text(text),
+                  actions: [
+                    TextButton(
+                        child: Text('Ok'),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        })
+                  ]);
+            }).then((data) {
+          if (result.data!) {
+            Navigator.of(context).pop();
+          }
+        });
+      }
     }
   }
 
